@@ -1,8 +1,7 @@
 import Head from 'next/head'
 import ColourBlock from '@/sections/colourBlock'
-import TextBlock from '@/sections/textBlock'
 
-export default function Home() {
+export default function About() {
 	return (
 		<>
 			<Head>
@@ -12,8 +11,7 @@ export default function Home() {
 				<link rel='icon' href='/favicon.ico' />
 			</Head>
 			<main>
-				<ColourBlock page={'home'} />
-				<TextBlock page={'home'} />
+				<ColourBlock page={'about'} />
 			</main>
 		</>
 	)
