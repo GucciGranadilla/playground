@@ -1,0 +1,246 @@
+@use "styles/mixins" as *;
+@use "styles/eases" as *;
+@use "styles/colors" as *;
+
+// === WRAPPER & BACKGROUND ===
+
+.wrapper {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  @include flex-container($gap: 0, $justify: center, $align: center);
+  color: $white;
+  z-index: 1000;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.bg {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+}
+
+.bgPanel {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 100%;
+  // background: $dblack;
+  // background: rgba(0, 0, 0, 1);
+  backdrop-filter: blur(40px);
+  clip-path: inset(0% 0% 0% 0%);
+}
+
+// === MAIN CONTAINER ===
+
+.container {
+  position: relative;
+  @include full-size;
+  z-index: 1;
+}
+
+.loading {
+  @include flex-container(
+    $gap: 0,
+    $direction: column,
+    $justify: center,
+    $align: center
+  );
+  position: relative;
+  height: 100%;
+}
+
+// === TEXT COMPONENTS ===
+
+.nameContainer {
+  @include center-absolute;
+  @include flex-container($gap: 0, $justify: center, $align: center);
+  z-index: 1; // Higher than bg (0) but lower than images (2)
+  white-space: nowrap;
+  overflow: hidden;
+  width: 100%;
+}
+
+.nameText {
+  display: inline-block;
+  color: $white;
+  will-change: transform;
+  overflow: hidden;
+  // Force GPU acceleration and prevent initial layout shift
+  transform: translateX(0);
+  // Ensure smooth subpixel rendering
+  backface-visibility: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+
+.gspContainer {
+  @include center-absolute;
+  white-space: nowrap;
+}
+
+.gspText {
+  display: inline-block;
+  white-space: nowrap;
+  text-align: center;
+  opacity: 1;
+}
+
+.gspText .expandText {
+  display: inline-block;
+  max-width: 0;
+  margin-right: 0;
+  overflow: hidden;
+  opacity: 1;
+  vertical-align: top;
+  white-space: nowrap;
+  will-change: opacity, max-width, margin-right;
+}
+
+.letter {
+  display: inline-block;
+  opacity: 1;
+  will-change: opacity;
+}
+
+.expandText .letter {
+  opacity: 0;
+}
+
+.gspText .expandText:last-of-type.active {
+  margin-right: 0;
+}
+
+// === PROGRESS BAR COMPONENTS ===
+
+.progressContainer {
+  position: fixed;
+  bottom: 8rem;
+  right: 8rem;
+  left: 8rem;
+  z-index: 2;
+  @include flex-container(
+    $gap: 1.6rem,
+    $direction: column,
+    $justify: flex-end,
+    $align: center
+  );
+}
+
+.progressText {
+  text-align: right;
+  opacity: 1;
+  overflow: hidden;
+  //PERCENTAGE TEXT
+  //   display: none;
+}
+
+// === LEGACY UI ELEMENTS ===
+
+.percentage {
+  position: relative;
+  bottom: 8rem;
+  right: 8rem;
+  z-index: 2;
+}
+
+.textWrap {
+  overflow: clip;
+}
+
+.logo {
+  width: fit-content;
+}
+
+.inner {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  @include flex-container($gap: 0, $justify: center, $align: center);
+  z-index: 1;
+}
+
+// === IMAGE COMPONENTS ===
+
+.imageWrap {
+  width: 0;
+  height: 0;
+}
+
+.images {
+  @include flex-container(24rem, column, flex-start, center);
+  transform: translateY(calc(50vh + 117rem));
+}
+
+.image {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 367rem;
+  height: 240rem;
+  object-fit: cover;
+  clip-path: inset(100% 100% 100% 100%); // Initial clipped state
+  will-change: clip-path;
+  z-index: 2; // Higher than text (1) and bg (0)
+  img {
+    @include full-size;
+    object-fit: cover;
+  }
+}
+
+.colorDiv {
+  background-color: $red;
+}
+.image img {
+  @include full-size;
+}
+
+.corners {
+  @include center-absolute(72rem, 72rem);
+  @include flex-container($gap: 0, $justify: center, $align: center);
+}
+
+// === ENTER BUTTON ===
+
+.enterButton {
+  position: fixed;
+  top: calc(50% + 120rem + 16rem);
+  left: 50%;
+  transform: translate(-50%, 0);
+  z-index: 10;
+  overflow: hidden;
+  mix-blend-mode: difference;
+}
+
+.clickable {
+  pointer-events: auto;
+  cursor: pointer;
+}
+
+// === MOBILE STYLES ===
+@include mobile-only {
+  .container {
+    height: 100%;
+    padding: 24rem;
+  }
+
+  .loading {
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 16rem;
+    height: 100%;
+  }
+
+  .corners {
+    display: none;
+  }
+}

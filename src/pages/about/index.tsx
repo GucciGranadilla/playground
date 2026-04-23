@@ -1,5 +1,5 @@
 import Head from 'next/head'
-import ColourBlock from '@/sections/colourBlock'
+import Hero from '@/sections/hero'
 
 export default function About() {
 	return (
@@ -11,7 +11,7 @@ export default function About() {
 				<link rel='icon' href='/favicon.ico' />
 			</Head>
 			<main>
-				<ColourBlock page={'about'} />
+				<Hero page={'about'} />
 			</main>
 		</>
 	)

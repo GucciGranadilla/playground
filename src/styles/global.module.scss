@@ -1,0 +1,18 @@
+.padding {
+	padding-left: 20rem;
+	padding-right: 20rem;
+}
+
+@media screen and (min-width: 481px) {
+	.padding {
+		padding-left: 32rem;
+		padding-right: 32rem;
+	}
+}
+
+@media screen and (min-width: 1025px) {
+	.padding {
+		padding-left: 48rem;
+		padding-right: 48rem;
+	}
+}

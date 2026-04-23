@@ -1,7 +1,6 @@
 import { ReactNode } from 'react'
 
 // import DesignGrid from 'components/designGrid'
-// import Nav from 'components/nav'
 // import Cursor from 'components/cursor'
 
 interface LayoutProps {
@@ -18,9 +17,7 @@ export default function Layout({ children, page, settings, popup }: LayoutProps)
 				<DesignGrid col={12} mcol={8} light={false} />
 			) : null} */}
 			{/* <Cursor /> */}
-			{/* <Nav page={page} settings={settings} popup={popup}> */}
 			{children}
-			{/* </Nav> */}
 		</>
 	)
 }

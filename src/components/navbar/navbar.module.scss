@@ -1,0 +1,61 @@
+.root {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  width: 100%;
+  z-index: 999;
+
+  --nav-offset: 0px;
+  --nav-height: 100%;
+  --nav-bg-offset: 100%;
+  transform: translateY(calc(var(--nav-offset) * -1));
+  will-change: transform;
+
+  &.sliding {
+    transition: transform 0.7s cubic-bezier(0.5, 0, 0.15, 1);
+  }
+}
+
+.inner {
+  position: relative;
+  overflow: clip;
+  padding: 14rem 20rem 6rem;
+  display: grid;
+  align-items: center;
+  grid-template-columns: repeat(12, 1fr);
+  gap: 12rem;
+  color: white;
+}
+
+.navBg {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: var(--nav-height);
+  transform: translateY(var(--nav-bg-offset, var(--nav-height)));
+  background: white;
+  pointer-events: none;
+}
+
+.logo {
+  grid-column: 1/4;
+  mix-blend-mode: difference;
+  position: relative;
+}
+
+.menu {
+  grid-column: 7/9;
+  display: flex;
+  gap: 4rem;
+  mix-blend-mode: difference;
+  position: relative;
+}
+
+.button {
+  grid-column: 12/-1;
+  justify-self: flex-end;
+  mix-blend-mode: difference;
+  position: relative;
+}

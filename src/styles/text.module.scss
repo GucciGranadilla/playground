@@ -1,34 +1,100 @@
+.logo,
+.xxl,
 .xl,
-.l,
+.l {
+  line-height: 100%;
+  font-weight: 400;
+  font-family: "Questrial", sans-serif;
+}
+
 .m,
 .s,
 .p {
-	line-height: 100%;
-	font-weight: 400;
+  line-height: 100%;
+  font-weight: 400;
+  font-family:
+    "Geist",
+    -apple-system,
+    BlinkMacSystemFont,
+    sans-serif;
+}
+
+.xxl {
+  font-size: 180rem;
+  line-height: 180rem;
+  letter-spacing: -0.02em;
+  font-weight: 400;
+  // text-transform: uppercase;
 }
 
 .xl {
-	font-size: 42rem;
-	line-height: 36rem;
-	font-weight: 600;
+  font-size: 42rem;
+  line-height: 46rem;
+  letter-spacing: -0.03em;
+  word-spacing: 1em;
+  font-weight: 400;
+  text-transform: uppercase;
 }
 
 .l {
-	font-size: 24rem;
-	line-height: 22rem;
+  font-size: 26rem;
+  line-height: 26rem;
+  letter-spacing: -0.03em;
+  text-transform: uppercase;
 }
 
 .m {
-	font-size: 20rem;
-	line-height: 18rem;
+  font-size: 20rem;
+  line-height: 26rem;
 }
 
 .s {
-	font-size: 16rem;
-	line-height: 16rem;
+  font-size: 14rem;
+  line-height: 20rem;
 }
 
 .p {
-	font-size: 18rem;
-	line-height: 20rem;
+  font-size: 14rem;
+  line-height: 16rem;
+}
+
+.tag {
+  font-size: 13rem;
+  line-height: 13rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  font-family:
+    "Geist",
+    -apple-system,
+    BlinkMacSystemFont,
+    sans-serif;
+}
+.cta {
+  font-size: 10rem;
+  line-height: 8rem;
+  font-weight: 500;
+  font-family:
+    "Geist",
+    -apple-system,
+    BlinkMacSystemFont,
+    sans-serif;
+  text-transform: uppercase;
+}
+
+.logo {
+  font-size: 24rem;
+  line-height: 24rem;
+  letter-spacing: -0.02em;
+  font-weight: 400;
+}
+.red {
+  color: var(--accent, #960707);
+}
+
+.lineClip {
+  overflow: clip;
+  display: inline-block;
+  vertical-align: bottom;
+  padding-bottom: 0.15em;
+  margin-bottom: -0.15em;
 }

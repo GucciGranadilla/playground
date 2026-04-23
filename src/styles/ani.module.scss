@@ -1,0 +1,225 @@
+@use "styles/_eases" as *;
+
+/* Reveal Block */
+.blockReveal::before {
+  width: 0%;
+  transition: width 1s cubic-bezier(0.5, 0.5, 0.1, 1);
+}
+.ready .blockReveal::before {
+  width: 100%;
+  transition-delay: var(--delay);
+}
+
+/* Move Up */
+.moveUp {
+  transform: translate3d(0, 120%, 0);
+  opacity: 0;
+  // transition: transform 1s cubic-bezier(.5,.5,.1,1)
+  transition:
+    transform 0.85s ease(quartOut),
+    opacity 0.85s ease(quartOut);
+}
+.ready .moveUp {
+  transform: translate3d(0, 0, 0);
+  opacity: 1;
+  transition-delay: var(--delay);
+}
+.disabled .moveUp {
+  transform: translate3d(0, 0, 0);
+  opacity: 1;
+  transition: none;
+}
+
+/* Move Up — scroll triggered (inView only) */
+.moveUpScroll {
+  transform: translate3d(0, 120%, 0);
+  opacity: 0;
+  transition:
+    transform 0.85s ease(quartOut),
+    opacity 0.85s ease(quartOut);
+}
+.inView .moveUpScroll {
+  transform: translate3d(0, 0, 0);
+  opacity: 1;
+  transition-delay: var(--delay);
+}
+.disabled .moveUpScroll {
+  transform: translate3d(0, 0, 0);
+  opacity: 1;
+  transition: none;
+}
+
+/* Move Up Fast */
+.moveUpF {
+  transform: translate3d(0, 120%, 0);
+  // transition: transform .7s cubic-bezier(.5,.5,.1,1)
+  transition: transform 0.7s ease(quartOut);
+}
+.ready .moveUpF {
+  transform: translate3d(0, 0, 0);
+  transition-delay: var(--delay);
+}
+.disabled .moveUpF {
+  transform: translate3d(0, 0, 0);
+  transition: none;
+}
+
+/* Fade Up 50% */
+.fadeUp50 {
+  opacity: 0;
+  transform: translate3d(0, 50rem, 0);
+  transition:
+    transform 1s cubic-bezier(0.2, 0.6, 0.1, 1),
+    opacity 1s linear;
+}
+.ready .fadeUp50 {
+  opacity: 1;
+  transform: translate3d(0, 0, 0);
+  transition-delay: var(--delay);
+}
+.disabled .fadeUp50 {
+  opacity: 1;
+  transform: translate3d(0, 0, 0);
+  transition: none;
+}
+
+/* Fade Up 20% */
+.fadeUp20 {
+  opacity: 0;
+  transform: translate3d(0, 20rem, 0);
+  transition:
+    transform 1s cubic-bezier(0.2, 0.6, 0.1, 1),
+    opacity 1s linear;
+}
+.ready .fadeUp20 {
+  opacity: 1;
+  transform: translate3d(0, 0, 0);
+  transition-delay: var(--delay);
+}
+.disabled .fadeUp20 {
+  opacity: 1;
+  transform: translate3d(0, 0, 0);
+  transition: none;
+}
+
+/* Fade Up 50% — scroll triggered */
+.fadeUp50Scroll {
+  opacity: 0;
+  transform: translate3d(0, 50rem, 0);
+  transition:
+    transform 1s cubic-bezier(0.2, 0.6, 0.1, 1),
+    opacity 1s linear;
+}
+.inView .fadeUp50Scroll {
+  opacity: 1;
+  transform: translate3d(0, 0, 0);
+  transition-delay: var(--delay);
+}
+.disabled .fadeUp50Scroll {
+  opacity: 1;
+  transform: translate3d(0, 0, 0);
+  transition: none;
+}
+
+/* Fade Blur In */
+.blurFade {
+  opacity: 0;
+  filter: blur(16px);
+  transition:
+    filter 0.6s linear,
+    opacity 0.6s linear;
+}
+.ready .blurFade {
+  opacity: 1;
+  filter: blur(0px);
+  transition-delay: var(--delay);
+}
+.disabled .blurFade {
+  opacity: 1;
+  filter: blur(0px);
+  transition: none;
+}
+
+/* MediaParallax */
+.mediaParallax {
+  transform: translate3d(0, 30%, 0) scale(1.2);
+  transition: transform 1s ease(quartOut);
+}
+.ready .mediaParallax {
+  transform: translate3d(0, 0, 0) scale(1);
+  transition-delay: var(--delay);
+}
+.disabled .mediaParallax {
+  transform: translate3d(0, 0, 0) scale(1);
+  transition: none;
+}
+
+/* Fill Width */
+.fillWidth {
+  transform: translate3d(0, 0, 0);
+  transition: transform 1s cubic-bezier(0.2, 0.6, 0.1, 1);
+}
+.ready .fillWidth {
+  transform: translate3d(0, 0, 0);
+  transform: scaleX(1) !important;
+  transition-delay: var(--delay);
+}
+.disabled .fillWidth {
+  transform: translate3d(0, 0, 0);
+  transition: none;
+}
+
+.scaleIn {
+  transform: scale(1.08);
+  transition: transform 1s cubic-bezier(0.2, 0.6, 0.1, 1);
+}
+.ready .scaleIn {
+  transform: scale(1);
+  transition-delay: var(--delay);
+}
+
+/* Clip Reveal Bottom Up */
+.clipRevealUp {
+  clip-path: inset(0% 0% 100% 0%);
+  transition: clip-path 1s ease(io4);
+}
+.ready .clipRevealUp {
+  clip-path: inset(0% 0 0 0);
+  opacity: 1;
+  transition-delay: var(--delay);
+}
+.disabled .clipRevealUp {
+  clip-path: inset(0% 0 0 0);
+  transition: none;
+}
+
+/* Clip Reveal Bottom Up — scroll triggered */
+.clipRevealUpScroll {
+  clip-path: inset(0% 0% 100% 0%);
+  transition: clip-path 1s ease(io2c);
+}
+.inView .clipRevealUpScroll {
+  clip-path: inset(0% 0 0 0);
+  transition-delay: var(--delay);
+}
+.disabled .clipRevealUpScroll {
+  clip-path: inset(0% 0 0 0);
+  transition: none;
+}
+
+/* Draw Line — scroll triggered */
+.drawLine {
+  display: block;
+  width: 0%;
+  height: 1px;
+  background: currentColor;
+  transition: width 0.9s ease(quartOut);
+}
+.inView .drawLine {
+  width: 100%;
+  transition-delay: var(--delay);
+}
+.disabled .drawLine {
+  width: 100%;
+  transition: none;
+}
