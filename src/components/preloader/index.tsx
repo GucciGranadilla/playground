@@ -330,6 +330,7 @@ export default function Preloader({ disabled }: { disabled?: boolean }) {
   }, [showEnter]);
 
   const handleEnter = () => {
+    lenis?.start();
     const dubAudio = new Audio("/effects/dub.mp3");
     dubAudio.volume = 0.25;
     dubAudio.play().catch(() => {});

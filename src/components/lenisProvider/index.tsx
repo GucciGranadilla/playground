@@ -1,5 +1,5 @@
 import { ReactNode, useEffect } from "react";
-import Lenis from "lenis";
+import { ReactLenis, useLenis } from "lenis/react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 
@@ -11,42 +11,38 @@ interface LenisProviderProps {
   children: ReactNode;
 }
 
-interface WindowWithLenis extends Window {
-  lenis?: Lenis;
+function LenisGSAPSync() {
+  const lenis = useLenis();
+
+  useEffect(() => {
+    if (!lenis) return;
+    const rafCallback = (time: number) => lenis.raf(time * 1000);
+    lenis.on("scroll", ScrollTrigger.update);
+    lenis.on("scroll", () => window.dispatchEvent(new Event("scroll")));
+    gsap.ticker.add(rafCallback);
+    gsap.ticker.lagSmoothing(0);
+    return () => {
+      gsap.ticker.remove(rafCallback);
+    };
+  }, [lenis]);
+
+  return null;
 }
 
 export default function LenisProvider({ children }: LenisProviderProps) {
-  useEffect(() => {
-    const lenis = new Lenis({
-      duration: 1.4,
-      easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
-      smoothWheel: true,
-      autoResize: true,
-    });
-
-    if (typeof window !== "undefined") {
-      (window as WindowWithLenis).lenis = lenis;
-    }
-
-    // Sync Lenis with GSAP's ticker so both run on the same frame
-    // and ScrollTrigger's scroll position stays in sync
-    lenis.on("scroll", ScrollTrigger.update);
-    gsap.ticker.add((time) => lenis.raf(time * 1000));
-    gsap.ticker.lagSmoothing(0);
-
-    // Notify Framer Motion's useScroll on each Lenis frame
-    lenis.on("scroll", () => {
-      window.dispatchEvent(new Event("scroll"));
-    });
-
-    return () => {
-      gsap.ticker.remove((time) => lenis.raf(time * 1000));
-      lenis.destroy();
-      if (typeof window !== "undefined") {
-        (window as WindowWithLenis).lenis = undefined;
-      }
-    };
-  }, []);
-
-  return <>{children}</>;
+  return (
+    <ReactLenis
+      root
+      options={{
+        duration: 1.4,
+        easing: (t: number) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+        smoothWheel: true,
+        autoResize: true,
+        autoRaf: false,
+      }}
+    >
+      <LenisGSAPSync />
+      {children}
+    </ReactLenis>
+  );
 }
