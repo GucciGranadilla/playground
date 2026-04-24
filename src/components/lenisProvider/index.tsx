@@ -18,7 +18,6 @@ function LenisGSAPSync() {
     if (!lenis) return;
     const rafCallback = (time: number) => lenis.raf(time * 1000);
     lenis.on("scroll", ScrollTrigger.update);
-    lenis.on("scroll", () => window.dispatchEvent(new Event("scroll")));
     gsap.ticker.add(rafCallback);
     gsap.ticker.lagSmoothing(0);
     return () => {

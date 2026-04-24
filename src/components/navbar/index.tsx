@@ -1,6 +1,6 @@
 import { useRef, useEffect } from "react";
 import { useRouter } from "next/router";
-import Lenis from "lenis";
+import { useLenis } from "lenis/react";
 import Link from "next/link";
 
 import s from "./navbar.module.scss";
@@ -13,12 +13,9 @@ interface NavbarProps {
   settings?: unknown;
 }
 
-interface WindowWithLenis extends Window {
-  lenis?: Lenis;
-}
-
-export default function Navbar({ page, settings }: NavbarProps) {
+export default function Navbar({ page }: NavbarProps) {
   const router = useRouter();
+  const lenis = useLenis();
   const navRef = useRef<HTMLElement>(null);
   const offsetRef = useRef(0);
   const prevScrollRef = useRef(0);
@@ -51,79 +48,58 @@ export default function Navbar({ page, settings }: NavbarProps) {
 
   useEffect(() => {
     const nav = navRef.current;
-    if (!nav) return;
+    if (!nav || !lenis) return;
 
     const navHeight = nav.offsetHeight;
     nav.style.setProperty("--nav-height", `${navHeight}px`);
-    document.documentElement.style.setProperty(
-      "--nav-height",
-      `${navHeight}px`,
-    );
+    document.documentElement.style.setProperty("--nav-height", `${navHeight}px`);
 
-    const attach = () => {
-      const lenis = (window as WindowWithLenis).lenis;
-      if (!lenis) return false;
+    const updateBg = () => {
+      const navH = nav.offsetHeight;
+      const hiddenPos = navH + 2;
+      nav.style.setProperty("--nav-height", `${navH}px`);
+      document.documentElement.style.setProperty("--nav-height", `${navH}px`);
 
-      const updateBg = () => {
-        const navH = nav.offsetHeight;
-        const hiddenPos = navH + 2;
-        nav.style.setProperty("--nav-height", `${navH}px`);
-        document.documentElement.style.setProperty("--nav-height", `${navH}px`);
-
-        const hero = document.querySelector<HTMLElement>(
-          "[data-page-active] [data-hero]",
+      const hero = document.querySelector<HTMLElement>(
+        "[data-page-active] [data-hero]",
+      );
+      if (hero) {
+        const heroBottom = hero.getBoundingClientRect().bottom;
+        const bgOffset = Math.round(
+          Math.min(hiddenPos, Math.max(0, heroBottom + offsetRef.current)),
         );
-        if (hero) {
-          const heroBottom = hero.getBoundingClientRect().bottom;
-          const bgOffset = Math.round(
-            Math.min(hiddenPos, Math.max(0, heroBottom + offsetRef.current)),
-          );
-          nav.style.setProperty("--nav-bg-offset", `${bgOffset}px`);
-        } else {
-          nav.style.setProperty("--nav-bg-offset", `${hiddenPos}px`);
-        }
-      };
+        nav.style.setProperty("--nav-bg-offset", `${bgOffset}px`);
+      } else {
+        nav.style.setProperty("--nav-bg-offset", `${hiddenPos}px`);
+      }
+    };
 
-      const onScroll = () => {
-        const navH = nav.offsetHeight;
-        const scroll = window.scrollY;
-        const delta = scroll - prevScrollRef.current;
-        prevScrollRef.current = scroll;
+    const onScroll = () => {
+      const navH = nav.offsetHeight;
+      const scroll = window.scrollY;
+      const delta = scroll - prevScrollRef.current;
+      prevScrollRef.current = scroll;
 
-        // Nav hide / show
-        offsetRef.current = Math.round(
-          Math.min(navH, Math.max(0, offsetRef.current + delta)),
-        );
-        nav.style.setProperty("--nav-offset", `${offsetRef.current}px`);
-        document.documentElement.style.setProperty(
-          "--nav-offset",
-          `${offsetRef.current}px`,
-        );
-
-        updateBg();
-      };
-
-      const onResize = () => updateBg();
+      offsetRef.current = Math.round(
+        Math.min(navH, Math.max(0, offsetRef.current + delta)),
+      );
+      nav.style.setProperty("--nav-offset", `${offsetRef.current}px`);
+      document.documentElement.style.setProperty(
+        "--nav-offset",
+        `${offsetRef.current}px`,
+      );
 
       updateBg();
-      lenis.on("scroll", onScroll);
-      window.addEventListener("resize", onResize);
-      return () => {
-        lenis.off("scroll", onScroll);
-        window.removeEventListener("resize", onResize);
-      };
     };
 
-    let cleanup: (() => void) | false;
-    const id = requestAnimationFrame(() => {
-      cleanup = attach();
-    });
-
+    updateBg();
+    lenis.on("scroll", onScroll);
+    window.addEventListener("resize", updateBg);
     return () => {
-      cancelAnimationFrame(id);
-      if (typeof cleanup === "function") cleanup();
+      lenis.off("scroll", onScroll);
+      window.removeEventListener("resize", updateBg);
     };
-  }, []);
+  }, [lenis]);
 
   return (
     <nav ref={navRef} className={s.root}>

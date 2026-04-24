@@ -49,7 +49,9 @@ function PageContent({
           safeToRemove?.();
         } else {
           setLockedHeight("auto");
-          lenis?.resize();
+          if (!lenis?.isStopped) {
+            lenis?.resize();
+          }
           ScrollTrigger.refresh();
         }
       }}
@@ -109,7 +111,7 @@ export default function PageTransition({ children }: PageTransitionProps) {
 
     const handleRouteChangeComplete = () => {
       if (lenis) {
-        lenis.scrollTo(0, { immediate: true });
+        lenis.scrollTo(0, { immediate: true, force: true });
       } else {
         window.scrollTo({
           top: 0,

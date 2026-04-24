@@ -42,12 +42,18 @@ export default function App({ Component, pageProps }: AppProps) {
     let hoverBuffer: AudioBuffer | null = null;
 
     Promise.all([
-      fetch("/effects/click.wav").then(r => r.arrayBuffer()).then(b => audioCtx.decodeAudioData(b)),
-      fetch("/effects/hover.mp3").then(r => r.arrayBuffer()).then(b => audioCtx.decodeAudioData(b)),
-    ]).then(([cb, hb]) => {
-      clickBuffer = cb;
-      hoverBuffer = hb;
-    }).catch(() => {});
+      fetch("/effects/click.wav")
+        .then((r) => r.arrayBuffer())
+        .then((b) => audioCtx.decodeAudioData(b)),
+      fetch("/effects/hover.mp3")
+        .then((r) => r.arrayBuffer())
+        .then((b) => audioCtx.decodeAudioData(b)),
+    ])
+      .then(([cb, hb]) => {
+        clickBuffer = cb;
+        hoverBuffer = hb;
+      })
+      .catch(() => {});
 
     let lastClickPlayed = 0;
     const handleClick = (e: MouseEvent) => {
