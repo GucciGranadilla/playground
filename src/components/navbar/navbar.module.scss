@@ -1,3 +1,5 @@
+@use "styles/colors" as *;
+
 .root {
   position: fixed;
   top: 0;
@@ -25,7 +27,7 @@
   align-items: center;
   grid-template-columns: repeat(12, 1fr);
   gap: 12rem;
-  color: white;
+  color: $white;
 }
 
 .navBg {
@@ -35,7 +37,7 @@
   right: 0;
   height: var(--nav-height);
   transform: translateY(var(--nav-bg-offset, var(--nav-height)));
-  background: white;
+  background: $white;
   pointer-events: none;
 }
 

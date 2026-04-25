@@ -1,4 +1,5 @@
 import { ReactNode, useEffect } from "react";
+import { ReactLenis, useLenis } from "lenis/react";
 import Lenis from "lenis";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
@@ -15,38 +16,53 @@ interface WindowWithLenis extends Window {
   lenis?: Lenis;
 }
 
-export default function LenisProvider({ children }: LenisProviderProps) {
+function LenisGSAPSync() {
+  const lenis = useLenis();
+
   useEffect(() => {
-    const lenis = new Lenis({
-      duration: 1.4,
-      easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
-      smoothWheel: true,
-      autoResize: true,
-    });
+    if (!lenis) return;
 
-    if (typeof window !== "undefined") {
-      (window as WindowWithLenis).lenis = lenis;
-    }
+    (window as WindowWithLenis).lenis = lenis;
 
-    // Sync Lenis with GSAP's ticker so both run on the same frame
-    // and ScrollTrigger's scroll position stays in sync
+    const rafCallback = (time: number) => lenis.raf(time * 1000);
+    let dispatching = false;
+    const scrollDispatch = () => {
+      if (dispatching) return;
+      dispatching = true;
+      window.dispatchEvent(new Event("scroll"));
+      dispatching = false;
+    };
+
     lenis.on("scroll", ScrollTrigger.update);
-    gsap.ticker.add((time) => lenis.raf(time * 1000));
+    lenis.on("scroll", scrollDispatch);
+    gsap.ticker.add(rafCallback);
     gsap.ticker.lagSmoothing(0);
 
-    // Notify Framer Motion's useScroll on each Lenis frame
-    lenis.on("scroll", () => {
-      window.dispatchEvent(new Event("scroll"));
-    });
-
     return () => {
-      gsap.ticker.remove((time) => lenis.raf(time * 1000));
-      lenis.destroy();
-      if (typeof window !== "undefined") {
-        (window as WindowWithLenis).lenis = undefined;
-      }
+      gsap.ticker.remove(rafCallback);
+      lenis.off("scroll", ScrollTrigger.update);
+      lenis.off("scroll", scrollDispatch);
+      (window as WindowWithLenis).lenis = undefined;
     };
-  }, []);
+  }, [lenis]);
 
-  return <>{children}</>;
+  return null;
+}
+
+export default function LenisProvider({ children }: LenisProviderProps) {
+  return (
+    <ReactLenis
+      root
+      options={{
+        duration: 1.4,
+        easing: (t: number) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+        smoothWheel: true,
+        autoResize: true,
+        autoRaf: false,
+      }}
+    >
+      <LenisGSAPSync />
+      {children}
+    </ReactLenis>
+  );
 }

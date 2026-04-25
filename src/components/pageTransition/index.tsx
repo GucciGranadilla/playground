@@ -6,6 +6,7 @@ import { useRouter } from "next/router";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useLenis } from "lenis/react";
+import s from "./transition.module.scss";
 
 if (typeof window !== "undefined") {
   gsap.registerPlugin(ScrollTrigger);
@@ -53,6 +54,7 @@ function PageContent({
           ScrollTrigger.refresh();
         }
       }}
+      className={!isPresent ? s.clone : undefined}
       style={{
         width: "100%",
         position: isPresent ? "relative" : "fixed",

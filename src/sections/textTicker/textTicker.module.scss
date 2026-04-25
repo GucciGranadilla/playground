@@ -1,10 +1,11 @@
+@use "styles/colors" as *;
+
 .root {
   display: grid;
   grid-template-columns: repeat(8, 1fr);
   grid-template-rows: auto 1fr;
   gap: 12rem;
   padding: 100rem 20rem;
-  background: white;
 }
 
 .blocks {
@@ -90,7 +91,7 @@
 .indicatorFill {
   position: absolute;
   inset: 0;
-  background: #000;
+  background: $black;
   transform-origin: left;
   transform: scaleX(0);
 }
@@ -121,8 +122,8 @@
   max-width: 120rem;
   min-height: 30rem;
   padding: 8rem 16rem;
-  background: black;
-  color: white;
+  background: $black;
+  color: $white;
   border-radius: 2rem;
   display: flex;
   align-items: center;

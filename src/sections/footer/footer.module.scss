@@ -1,3 +1,5 @@
+@use "styles/colors" as *;
+
 .root {
   position: relative;
   height: 100vh;
@@ -82,7 +84,7 @@
   align-self: stretch;
   width: 100%;
   max-width: 464rem;
-  border: 2rem solid white;
+  border: 2rem solid $white;
   pointer-events: none;
   z-index: 1;
 }
@@ -95,7 +97,7 @@
   flex: 0 0 auto;
   white-space: nowrap;
   padding-right: 40rem;
-  color: white;
+  color: $white;
 }
 .content,
 .logoWrapper {
@@ -116,7 +118,7 @@
 
 .middle,
 .bottom {
-  background: white;
+  background: $white;
 }
 .middle {
   padding: 24rem;
@@ -141,8 +143,8 @@
       max-width: 120rem;
       min-height: 30rem;
       padding: 8rem 16rem;
-      background: black;
-      color: white;
+      background: $black;
+      color: $white;
       border-radius: 2rem;
       display: flex;
       align-items: center;

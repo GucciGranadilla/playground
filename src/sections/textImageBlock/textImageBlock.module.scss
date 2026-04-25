@@ -1,7 +1,8 @@
+@use "styles/colors" as *;
+
 .root {
   display: grid;
   grid-template-columns: repeat(8, 1fr);
-  background: #ffffff;
   color: #171717;
   padding: 80rem 20rem 140rem;
 }
@@ -32,7 +33,7 @@
     min-height: 30rem;
     padding: 8rem 16rem;
     background: black;
-    color: white;
+    color: $white;
     border-radius: 2rem;
     display: flex;
     align-items: center;

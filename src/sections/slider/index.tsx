@@ -56,7 +56,7 @@ const SLIDES = [
 const clamp = (n: number, min: number, max: number) =>
   Math.min(Math.max(n, min), max);
 
-const INACTIVE_SCALE_X = 341 / 1044;
+const INACTIVE_SCALE_X = 341 / 1046;
 const INACTIVE_SCALE_Y = 347 / 820;
 
 export default function Slider({ page: _page }: { page?: string }) {
@@ -220,8 +220,7 @@ export default function Slider({ page: _page }: { page?: string }) {
                   <ParallaxImage
                     src={slide.src}
                     alt={slide.label}
-                    sizes="(max-width: 768px) 100vw, 1044px"
-                    quality={90}
+                    sizes="(max-width: 768px) 100vw, 72vw"
                     parallaxAmount={10}
                   />
                 </div>

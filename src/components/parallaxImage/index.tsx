@@ -30,7 +30,7 @@ export default function ParallaxImage({
   src,
   alt,
   sizes,
-  quality = 85,
+  quality = 75,
   priority,
   className,
   parallax = true,
