@@ -1,0 +1,53 @@
+@use 'styles/colors' as *;
+@use 'styles/eases' as *;
+
+.video {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+}
+
+.lazy {
+	opacity: 0;
+	transition: opacity 0.3s linear;
+
+	&.canplay {
+		opacity: 1;
+	}
+}
+
+.round {
+	border-radius: 2rem;
+	overflow: hidden;
+}
+
+.clickable {
+	cursor: pointer;
+}
+
+.parallax {
+	position: relative;
+	overflow: hidden;
+
+	video {
+		position: absolute;
+		height: 110%;
+		object-fit: cover;
+	}
+}
+
+.visible {
+	opacity: 1;
+}
+
+.hidden {
+	opacity: 0;
+}
+
+/* Tablet */
+@media screen and (min-width: 481px) {
+}
+
+/* Desktop */
+@media screen and (min-width: 1025px) {
+}

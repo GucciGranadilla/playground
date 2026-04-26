@@ -3,6 +3,7 @@
 import { useRef, useEffect } from "react";
 import Image from "next/image";
 import Router from "next/router";
+import Link from "next/link";
 import gsap from "gsap";
 import { useLenis } from "lenis/react";
 import s from "./workWave.module.scss";
@@ -11,100 +12,16 @@ import c from "@/utils/classNames";
 import { createAudioChain } from "@/utils/createAudioChain";
 import { randomHue } from "@/utils/randomHue";
 import { imagePlaceholders } from "@/utils/imagePlaceholders";
+import { WORK_ITEMS } from "@/data/workItems";
 
-const LEFT_ITEMS = [
-  { text: "Volt R2", image: "/images/tesla.webp", width: 896, height: 1344 },
-  { text: "Éclat", image: "/images/chanel.webp", width: 1232, height: 928 },
-  {
-    text: "Project Ion",
-    image: "/images/apple.webp",
-    width: 2464,
-    height: 1856,
-  },
-  { text: "AeroLine", image: "/images/BMW.webp", width: 896, height: 1344 },
-  { text: "Série Noir", image: "/images/YSL.webp", width: 1200, height: 1008 },
-  { text: "UltraRun", image: "/images/nike.webp", width: 1232, height: 928 },
-  {
-    text: "Atelier 03",
-    image: "/images/hermes.webp",
-    width: 1024,
-    height: 1056,
-  },
-  {
-    text: "Pulse One",
-    image: "/images/adidas.webp",
-    width: 1024,
-    height: 1024,
-  },
-  { text: "Linea 24", image: "/images/prada.webp", width: 1232, height: 928 },
-  {
-    text: "Echo Series",
-    image: "/images/google.webp",
-    width: 896,
-    height: 1344,
-  },
-  { text: "Zero", image: "/images/polestar.webp", width: 1024, height: 1024 },
-  {
-    text: "Shift/Black",
-    image: "/images/balenciaga.webp",
-    width: 1376,
-    height: 880,
-  },
-  { text: "Solar Drift", image: "/images/audi.webp", width: 896, height: 1344 },
-  { text: "Nº 27", image: "/images/valentino.webp", width: 1232, height: 976 },
-  { text: "Mode/3", image: "/images/samsung.webp", width: 1232, height: 928 },
-  {
-    text: "Pure Form",
-    image: "/images/bottega.webp",
-    width: 1024,
-    height: 1024,
-  },
-  { text: "Edge", image: "/images/sony.webp", width: 896, height: 1344 },
-  { text: "Stillwater", image: "/images/aesop.webp", width: 1232, height: 976 },
-  { text: "Parfum Nº8", image: "/images/dior.webp", width: 1072, height: 1024 },
-  { text: "Vantage", image: "/images/porsche.webp", width: 896, height: 1344 },
-  { text: "Core", image: "/images/microsoft.webp", width: 1232, height: 928 },
-  {
-    text: "Archive Green",
-    image: "/images/lexus.webp",
-    width: 1024,
-    height: 1024,
-  },
-  {
-    text: "Rosso Linea",
-    image: "/images/mercedes.webp",
-    width: 1232,
-    height: 928,
-  },
-  { text: "A-17", image: "/images/huawei.webp", width: 1024, height: 1024 },
-];
+const LEFT_ITEMS = WORK_ITEMS.map((item) => ({
+  link: `work/${item.slug}`,
+  text: item.title,
+  heroImage: item.heroImage,
+  cardImage: item.cardImage,
+}));
 
-const RIGHT_ITEMS = [
-  "Tesla",
-  "Chanel",
-  "Apple",
-  "BMW",
-  "Saint Laurent",
-  "Nike",
-  "Hermès",
-  "Adidas",
-  "Prada",
-  "Google",
-  "Polestar",
-  "Balenciaga",
-  "Audi",
-  "Valentino",
-  "Samsung",
-  "Bottega Veneta",
-  "Sony",
-  "Aesop",
-  "Dior",
-  "Porsche",
-  "Microsoft",
-  "Lexus",
-  "Mercedes-Benz",
-  "Huawei",
-];
+const RIGHT_ITEMS = WORK_ITEMS.map((item) => item.client);
 
 const LEFT = [...LEFT_ITEMS, ...LEFT_ITEMS];
 const RIGHT = [...RIGHT_ITEMS, ...RIGHT_ITEMS];
@@ -170,8 +87,9 @@ export default function WorkWave() {
     let activeSlot = 0;
     let lastFocused = -1;
 
-    // Show first slot immediately
-    gsap.set(thumbSlots[0], { opacity: 1 });
+    // All slots inert by default, activate first
+    gsap.set(thumbSlots, { opacity: 0, pointerEvents: "none" });
+    gsap.set(thumbSlots[0], { opacity: 1, pointerEvents: "auto" });
     gsap.set(bgSlots[0], { opacity: 1 });
 
     const measureOneSetHeight = () => {
@@ -200,9 +118,9 @@ export default function WorkWave() {
     const updateThumbnail = (focused: number) => {
       const newIndex = focused % HALF;
       if (newIndex === activeSlot) return;
-      gsap.set(thumbSlots[activeSlot], { opacity: 0 });
+      gsap.set(thumbSlots[activeSlot], { opacity: 0, pointerEvents: "none" });
       gsap.set(bgSlots[activeSlot], { opacity: 0 });
-      gsap.set(thumbSlots[newIndex], { opacity: 1 });
+      gsap.set(thumbSlots[newIndex], { opacity: 1, pointerEvents: "auto" });
       gsap.set(bgSlots[newIndex], { opacity: 1 });
       activeSlot = newIndex;
     };
@@ -287,7 +205,7 @@ export default function WorkWave() {
       <div ref={wrapperRef} className={s.wrapper}>
         <div ref={leftColRef} className={s.columnLeft}>
           {LEFT.map((item, i) => (
-            <div key={i} className={c(s.item, t.xl)} data-image={item.image}>
+            <div key={i} className={c(s.item, t.xl)} data-image={item.cardImage.src}>
               {item.text}
             </div>
           ))}
@@ -295,17 +213,17 @@ export default function WorkWave() {
 
         <div className={s.thumbnailWrapper}>
           {LEFT_ITEMS.map((item, i) => (
-            <div key={i} className={s.thumbSlot}>
+            <Link href={item?.link} key={i} className={s.thumbSlot}>
               <Image
-                src={item.image}
+                src={item.cardImage.src}
                 fill
                 className={s.thumbnail}
                 sizes="(max-width: 1023px) 50vw, 15vw"
-                placeholder={imagePlaceholders[item.image] ? "blur" : "empty"}
-                blurDataURL={imagePlaceholders[item.image]}
+                placeholder={imagePlaceholders[item.cardImage.src] ? "blur" : "empty"}
+                blurDataURL={imagePlaceholders[item.cardImage.src]}
                 alt=""
               />
-            </div>
+            </Link>
           ))}
         </div>
 
@@ -321,12 +239,12 @@ export default function WorkWave() {
           {LEFT_ITEMS.map((item, i) => (
             <div key={i} className={s.bgSlot}>
               <Image
-                src={item.image}
+                src={item.heroImage.src}
                 fill
                 className={s.bgthumbnail}
                 sizes="100vw"
-                placeholder={imagePlaceholders[item.image] ? "blur" : "empty"}
-                blurDataURL={imagePlaceholders[item.image]}
+                placeholder={imagePlaceholders[item.heroImage.src] ? "blur" : "empty"}
+                blurDataURL={imagePlaceholders[item.heroImage.src]}
                 alt=""
               />
             </div>

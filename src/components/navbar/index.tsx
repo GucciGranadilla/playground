@@ -62,10 +62,13 @@ export default function Navbar({ page }: NavbarProps) {
       nav.style.setProperty("--nav-height", `${navH}px`);
       document.documentElement.style.setProperty("--nav-height", `${navH}px`);
 
+      const alwaysBg = document.querySelector("[data-page-active] [data-nav-bg]");
       const hero = document.querySelector<HTMLElement>(
         "[data-page-active] [data-hero]",
       );
-      if (hero) {
+      if (alwaysBg) {
+        nav.style.setProperty("--nav-bg-offset", "0px");
+      } else if (hero) {
         const heroBottom = hero.getBoundingClientRect().bottom;
         const bgOffset = Math.round(
           Math.min(hiddenPos, Math.max(0, heroBottom + offsetRef.current)),
@@ -122,12 +125,13 @@ export default function Navbar({ page }: NavbarProps) {
         </Link>
         <ul className={c(s.menu, t.cta)}>
           <div style={{ overflow: "clip" }}>
-            <div
+            <Link
+              href="/work"
               className={a.moveUp}
               style={{ "--delay": "0.38s" } as React.CSSProperties}
             >
               work,
-            </div>
+            </Link>
           </div>
           <div style={{ overflow: "clip" }}>
             <div

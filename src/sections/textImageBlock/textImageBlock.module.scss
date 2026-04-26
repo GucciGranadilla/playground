@@ -4,7 +4,8 @@
   display: grid;
   grid-template-columns: repeat(8, 1fr);
   color: #171717;
-  padding: 80rem 20rem 140rem;
+  gap: 12rem;
+  padding: 60rem 12rem 120rem;
 }
 .imageWrap {
   grid-column: 1/3;

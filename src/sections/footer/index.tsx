@@ -54,7 +54,7 @@ export default function Footer({ page }: FooterProps) {
     },
     copyright: "© 2025. All Rights Reserved",
     links: [
-      { label: "Work", href: "/about" },
+      { label: "Work", href: "/work" },
       { label: "About", href: "/about" },
       { label: "Contact", href: "mailto:kevidavis911@gmail.com" },
     ],
