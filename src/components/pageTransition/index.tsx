@@ -70,9 +70,9 @@ function PageContent({
       }}
     >
       <motion.div
-        initial={{ y: 100 }}
+        initial={{ y: "100vh" }}
         animate={{ y: 0 }}
-        exit={{ y: -100 }}
+        exit={{ y: "-40vh" }}
         transition={{ duration: 1, ease: [0.5, 0, 0.15, 1] }}
         style={{
           width: "100%",

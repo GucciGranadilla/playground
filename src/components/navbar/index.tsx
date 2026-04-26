@@ -1,6 +1,7 @@
 import { useRef, useEffect } from "react";
 import { useRouter } from "next/router";
 import { useLenis } from "lenis/react";
+import gsap from "gsap";
 import Link from "next/link";
 
 import s from "./navbar.module.scss";
@@ -19,6 +20,7 @@ export default function Navbar({ page }: NavbarProps) {
   const navRef = useRef<HTMLElement>(null);
   const offsetRef = useRef(0);
   const prevScrollRef = useRef(0);
+  const updateBgRef = useRef<() => void>(() => {});
 
   useEffect(() => {
     const nav = navRef.current;
@@ -35,6 +37,11 @@ export default function Navbar({ page }: NavbarProps) {
       offsetRef.current = 0;
       nav.style.setProperty("--nav-offset", "0px");
       setTimeout(() => nav.classList.remove(s.sliding), 750);
+
+      // Drive updateBg every frame during the 1s page enter animation
+      // so --nav-bg-offset tracks [data-nav-bg]'s animated top position
+      gsap.ticker.add(updateBgRef.current);
+      setTimeout(() => gsap.ticker.remove(updateBgRef.current), 1100);
     };
 
     router.events.on("routeChangeStart", handleRouteStart);
@@ -45,6 +52,7 @@ export default function Navbar({ page }: NavbarProps) {
       router.events.off("routeChangeComplete", handleRouteComplete);
     };
   }, [router]);
+
   useEffect(() => {
     const nav = navRef.current;
     if (!nav || !lenis) return;
@@ -62,12 +70,21 @@ export default function Navbar({ page }: NavbarProps) {
       nav.style.setProperty("--nav-height", `${navH}px`);
       document.documentElement.style.setProperty("--nav-height", `${navH}px`);
 
-      const alwaysBg = document.querySelector("[data-page-active] [data-nav-bg]");
+      const alwaysBg = document.querySelector<HTMLElement>(
+        "[data-page-active] [data-nav-bg]",
+      );
       const hero = document.querySelector<HTMLElement>(
         "[data-page-active] [data-hero]",
       );
+
       if (alwaysBg) {
-        nav.style.setProperty("--nav-bg-offset", "0px");
+        // Track the section's live top position — getBoundingClientRect reflects
+        // the Framer Motion y-translate so the bg slides in with the page content
+        const sectionTop = alwaysBg.getBoundingClientRect().top;
+        const bgOffset = Math.round(
+          Math.min(hiddenPos, Math.max(0, sectionTop)),
+        );
+        nav.style.setProperty("--nav-bg-offset", `${bgOffset}px`);
       } else if (hero) {
         const heroBottom = hero.getBoundingClientRect().bottom;
         const bgOffset = Math.round(
@@ -78,6 +95,8 @@ export default function Navbar({ page }: NavbarProps) {
         nav.style.setProperty("--nav-bg-offset", `${hiddenPos}px`);
       }
     };
+
+    updateBgRef.current = updateBg;
 
     const onScroll = () => {
       const navH = nav.offsetHeight;
