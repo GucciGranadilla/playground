@@ -21,7 +21,7 @@ export default function WorkPage({ page }: WorkPageProps) {
       </Head>
       <main>
         <WorkBlock page={page} />
-        <Footer page={page} />
+        <Footer page={page.slug} />
       </main>
     </>
   );

@@ -41,14 +41,12 @@ export default function TextBlock({ page }: TextBlockProps) {
           delay={0}
           stagger={0.01}
           segments={[
-            { text: "Each project begins with" },
-            { text: "how the space should feel," },
-            {
-              text: "shaped by the client's vision, the energy they want to create, and",
-            },
-            { text: "the moments they hope to inspire." },
-            { text: "the energy they want to create," },
-            { text: "and the moments they hope to inspire." },
+            { text: "Every project starts with" },
+            { text: "a single question —" },
+            { text: "not what should this look like" },
+            { text: "but what should it feel like" },
+            { text: "to the person experiencing it" },
+            { text: "for the very first time" },
           ]}
         />
       </div>

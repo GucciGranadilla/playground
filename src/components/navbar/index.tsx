@@ -21,6 +21,8 @@ export default function Navbar({ page }: NavbarProps) {
   const offsetRef = useRef(0);
   const prevScrollRef = useRef(0);
   const updateBgRef = useRef<() => void>(() => {});
+  const tickerFnRef = useRef<(() => void) | null>(null);
+  const bgWasVisibleRef = useRef(false);
 
   useEffect(() => {
     const nav = navRef.current;
@@ -30,18 +32,36 @@ export default function Navbar({ page }: NavbarProps) {
       nav.classList.add(s.sliding);
       nav.style.setProperty("--nav-offset", "100px");
       offsetRef.current = 100;
+      // Capture whether navBg is visible right now so the exit push-up only
+      // fires when there's actually something to push out.
+      const offsetStr = nav.style.getPropertyValue("--nav-bg-offset");
+      const navH = nav.offsetHeight;
+      bgWasVisibleRef.current = !!offsetStr && parseInt(offsetStr) < navH + 2;
+      // Kill any in-flight ticker from a previous transition
+      if (tickerFnRef.current) {
+        gsap.ticker.remove(tickerFnRef.current);
+        tickerFnRef.current = null;
+      }
     };
 
     const handleRouteComplete = () => {
       prevScrollRef.current = 0;
-      offsetRef.current = 0;
-      nav.style.setProperty("--nav-offset", "0px");
-      setTimeout(() => nav.classList.remove(s.sliding), 750);
 
-      // Drive updateBg every frame during the 1s page enter animation
-      // so --nav-bg-offset tracks [data-nav-bg]'s animated top position
-      gsap.ticker.add(updateBgRef.current);
-      setTimeout(() => gsap.ticker.remove(updateBgRef.current), 1100);
+      // Always wait for the page animation to complete before bringing nav back
+      setTimeout(() => {
+        offsetRef.current = 0;
+        nav.style.setProperty("--nav-offset", "0px");
+        setTimeout(() => nav.classList.remove(s.sliding), 750);
+      }, 1000);
+
+      // Drive updateBg every frame during the 1s page enter animation.
+      const fn = updateBgRef.current;
+      tickerFnRef.current = fn;
+      gsap.ticker.add(fn);
+      setTimeout(() => {
+        gsap.ticker.remove(fn);
+        if (tickerFnRef.current === fn) tickerFnRef.current = null;
+      }, 1100);
     };
 
     router.events.on("routeChangeStart", handleRouteStart);
@@ -76,6 +96,9 @@ export default function Navbar({ page }: NavbarProps) {
       const hero = document.querySelector<HTMLElement>(
         "[data-page-active] [data-hero]",
       );
+      const pageInner = document.querySelector<HTMLElement>(
+        "[data-page-active] [data-page-inner]",
+      );
 
       if (alwaysBg) {
         // Track the section's live top position — getBoundingClientRect reflects
@@ -85,14 +108,26 @@ export default function Navbar({ page }: NavbarProps) {
           Math.min(hiddenPos, Math.max(0, sectionTop)),
         );
         nav.style.setProperty("--nav-bg-offset", `${bgOffset}px`);
-      } else if (hero) {
-        const heroBottom = hero.getBoundingClientRect().bottom;
-        const bgOffset = Math.round(
-          Math.min(hiddenPos, Math.max(0, heroBottom + offsetRef.current)),
-        );
-        nav.style.setProperty("--nav-bg-offset", `${bgOffset}px`);
       } else {
-        nav.style.setProperty("--nav-bg-offset", `${hiddenPos}px`);
+        const innerTop = pageInner?.getBoundingClientRect().top ?? 0;
+
+        if (innerTop > 0 && bgWasVisibleRef.current) {
+          // New page entering from 100vh — push navBg upward in the final navH px
+          // of travel, then snap to hiddenPos so it's ready for the next entry.
+          // Only fires if the bg was actually visible when the route change started.
+          const rawOffset = Math.min(0, innerTop - navH);
+          const bgOffset = rawOffset <= -navH ? hiddenPos : rawOffset;
+          nav.style.setProperty("--nav-bg-offset", `${Math.round(bgOffset)}px`);
+        } else if (hero) {
+          // Page at rest — standard hero-bottom scroll tracking
+          const heroBottom = hero.getBoundingClientRect().bottom;
+          const bgOffset = Math.round(
+            Math.min(hiddenPos, Math.max(0, heroBottom + offsetRef.current)),
+          );
+          nav.style.setProperty("--nav-bg-offset", `${bgOffset}px`);
+        } else {
+          nav.style.setProperty("--nav-bg-offset", `${hiddenPos}px`);
+        }
       }
     };
 

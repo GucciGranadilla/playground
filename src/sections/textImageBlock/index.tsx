@@ -20,13 +20,13 @@ export default function TextBlock({ page }: TextBlockProps) {
   const item = {
     image: {
       src: "/images/d7f035241a98e3094fc1216a91be7a40.jpg",
-      name: "Gavin Schneider Productions",
+      name: "Kevin Davis",
       year: 2025,
     },
     title:
-      "A state-of-the-art studio facility that thrives on bringing creative ideas to life.",
-    tag: "Let’s work together",
-    text: "Full service digital experience studio. I work with bold, forward thinking brands to make experiences as impactful as the brands they are for. My approach is rooted in collaboration, we work with friends and other creative teams to achieve results.",
+      "The right collaboration makes the difference between work that exists and work that endures.",
+    tag: "The next project",
+    text: "I take a limited number of projects each year to ensure every engagement receives the full weight of my attention. If you’re building something that demands precision, I’d like to hear about it.",
     link: {
       href: "/contact",
       label: "Get in touch",
@@ -69,12 +69,14 @@ export default function TextBlock({ page }: TextBlockProps) {
           delay={0}
           stagger={0.01}
           segments={[
-            { text: "Each project begins with" },
-            { text: "how the space should feel," },
-            {
-              text: "shaped by the client's vision, the energy they want to create, and",
-            },
-            { text: "the moments they hope to inspire." },
+            { text: "The right collaboration makes" },
+            { text: "the difference between work" },
+            { text: "that exists and work" },
+            { text: "that endures." },
+            { text: "It starts with understanding" },
+            { text: "not what the brand wants to say" },
+            { text: "but what it needs" },
+            { text: "the world to feel." },
           ]}
         />
       </div>

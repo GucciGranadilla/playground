@@ -46,9 +46,9 @@ export default function Footer({ page }: FooterProps) {
       src: "/images/footer.jpg",
     },
     contact: {
-      text: "Thoughts, projects, and updates",
+      text: "The work, the process, the thinking",
       link: {
-        label: "Subscribe Now",
+        label: "Follow",
         href: "mailto:kevidavis911@gmail.com",
       },
     },

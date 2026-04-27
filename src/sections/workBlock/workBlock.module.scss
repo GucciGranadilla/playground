@@ -1,25 +1,49 @@
+@use "styles/colors" as *;
+
 .root {
-  padding: 240rem 12rem 12rem;
+  padding: 280rem 12rem 12rem;
 }
 
 .header {
-  display: flex;
-  flex-direction: column;
+  display: grid;
+  grid-template-columns: repeat(8, 1fr);
+  grid-template-rows: auto auto auto;
+  column-gap: 12rem;
+  margin-bottom: 40rem;
+  border-top: 1px dashed $lgrey;
+  padding-top: 18rem;
 }
 
 .client {
-  opacity: 0.4;
+  grid-column: 1 / 4;
+  grid-row: 1;
+  // color: $grey;
+}
+
+.year {
+  grid-column: 4 / 9;
+  grid-row: 1;
+  text-align: right;
+  // color: $grey;
 }
 
 .title {
-  margin: 0;
+  grid-column: 1 / -1;
+  grid-row: 2;
+  margin: 40rem 0 0;
+}
+
+.excerpt {
+  grid-column: 5 / 7;
+  grid-row: 1;
+  // color: $grey;
+  align-self: flex-end;
 }
 
 .blocks {
   display: grid;
   grid-template-columns: repeat(8, 1fr);
   gap: 12rem;
-  padding: 40rem 0;
 }
 
 .cell {

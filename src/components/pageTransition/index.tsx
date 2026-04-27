@@ -35,7 +35,7 @@ function PageContent({
       animate={{ clipPath: "inset(0% 0% 0% 0%)", filter: "brightness(1)" }}
       exit={{
         clipPath: "inset(0% 0% 100% 0%)",
-        filter: "brightness(0)",
+        filter: "brightness(0.15)",
       }}
       transition={{ duration: 1, ease: [0.5, 0, 0.15, 1] }}
       onAnimationStart={() => {
@@ -70,7 +70,8 @@ function PageContent({
       }}
     >
       <motion.div
-        initial={{ y: "100vh" }}
+        data-page-inner
+        initial={{ y: "80vh" }}
         animate={{ y: 0 }}
         exit={{ y: "-40vh" }}
         transition={{ duration: 1, ease: [0.5, 0, 0.15, 1] }}

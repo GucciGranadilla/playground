@@ -188,7 +188,6 @@ export default function WorkWave() {
       cancelAnimationFrame(rafId);
       window.removeEventListener("wheel", onWheel);
       window.removeEventListener("resize", onResize);
-      lenis?.start();
       audioCtx.close();
     };
 

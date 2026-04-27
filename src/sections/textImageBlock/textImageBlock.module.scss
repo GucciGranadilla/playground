@@ -16,6 +16,7 @@
 .body {
   grid-column: 5/-1;
   margin-bottom: 280rem;
+  padding-right: 20rem;
 }
 .content {
   grid-column: 6/8;
@@ -25,7 +26,7 @@
 
   h2 {
     padding-bottom: 20rem;
-    border-bottom: 1rem dashed rgba(0, 0, 0, 0.2);
+    border-bottom: 1px dashed $lgrey;
   }
 
   .link {

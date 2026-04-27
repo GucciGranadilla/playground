@@ -12,46 +12,20 @@ import t from "@/styles/text.module.scss";
 import a from "@/styles/ani.module.scss";
 import c from "@/utils/classNames";
 import { randomHue } from "@/utils/randomHue";
+import { WORK_ITEMS } from "@/data/workItems";
 
 if (typeof window !== "undefined") {
   gsap.registerPlugin(ScrollTrigger);
 }
 
-const item = {
-  link: {
-    href: "/work",
-    label: "View All Work",
-  },
-};
-
-const SLIDES = [
-  {
-    src: "/images/gsp.jpg",
-    label: "Gavin Schneider Productions",
-    href: "/work/gavin-schneider-productions",
-    excerpt:
-      "Full service digital experience studio. I work with bold, forward thinking brands to make experiences as impactful as the brands they are for. Full service digital experience studio.",
-    year: 2025,
-  },
-  {
-    src: "/images/higherlife.jpg",
-    label: "Higherlife Foundation",
-    href: "/work/higherlife-foundation",
-    excerpt:
-      "2 Full service digital experience studio. I work with bold, forward thinking brands to make experiences as impactful as the brands they are for. Full service digital experience studio.",
-    year: 2025,
-  },
-  {
-    src: "/images/paragon.jpg",
-    label: "Paragon Properties",
-    href: "/work/paragon-properties",
-    excerpt:
-      "3 Full service digital experience studio. I work with bold, forward thinking brands to make experiences as impactful as the brands they are for. Full service digital experience studio.",
-    year: 2025,
-  },
-  //   { src: "/images/ac00ea0403609542c800dfbf0d027d27.jpg", label: "04 — Space" },
-  //   { src: "/images/d7f035241a98e3094fc1216a91be7a40.jpg", label: "05 — Light" },
-];
+const SLIDES = WORK_ITEMS.filter((w) => w.featured).slice(0, 5).map((w) => ({
+  src: w.cardImage.src,
+  label: w.title,
+  client: w.client,
+  href: `/work/${w.slug}`,
+  excerpt: w.excerpt,
+  year: w.year,
+}));
 
 const clamp = (n: number, min: number, max: number) =>
   Math.min(Math.max(n, min), max);
@@ -230,8 +204,8 @@ export default function Slider({ page: _page }: { page?: string }) {
         </div>
       </div>
       <div className={s.bottom}>
-        <Link href={item.link.href} className={c(s.link, t.cta)}>
-          {item.link.label}
+        <Link href="/work" className={c(s.link, t.cta)}>
+          View All Work
         </Link>
         <div className={s.controls}>
           <button

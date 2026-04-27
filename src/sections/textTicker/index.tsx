@@ -25,18 +25,18 @@ interface TextTickerProps {
 const items = {
   image: {
     src: "/images/kevin.jpg",
-    name: "Gavin Schneider Productions",
+    name: "Kevin Davis",
     year: 2025,
   },
-  tag: "About the building",
+  tag: "The practice",
   text: [
-    "Full service digital experience studio. I work with bold, forward thinking brands to make experiences as impactful as the brands they are for. My approach is rooted in collaboration, we work with friends and other creative teams to achieve results.",
-    "2 Full service digital experience studio. I work with bold, forward thinking brands to make experiences as impactful as the brands they are for. My approach is rooted in collaboration, we work with friends and other creative teams to achieve results.",
-    "3 Full service digital experience studio. I work with bold, forward thinking brands to make experiences as impactful as the brands they are for. My approach is rooted in collaboration, we work with friends and other creative teams to achieve results.",
+    "Every project is built from scratch — no templates, no borrowed frameworks. Each decision, from database architecture to the subtlety of a hover state, is made with the final experience in mind.",
+    "I work directly with founders and creative leaders to understand not just what a brand does, but what it's trying to become. That clarity shapes every brief, and every brief shapes everything that follows.",
+    "The clients range from global luxury houses to category-defining technology brands. For all of them — the quality of how something is built is the brand.",
   ],
   link: {
     href: "/about",
-    label: "Learn more",
+    label: "About Kevin",
   },
 };
 
@@ -177,7 +177,7 @@ export default function TextTicker({ page }: TextTickerProps) {
     <section className={s.root} ref={containerRef}>
       <div className={c(s.body, t.l)}>
         <SplitText
-          text="Beautifully designed, hassle-free spaces across London, crafted to be your personal sanctuary."
+          text="Considered from the ground up for brands that know the difference"
           type="words"
           trigger="scroll"
           delay={0}

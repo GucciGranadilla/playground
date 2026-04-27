@@ -27,8 +27,8 @@ export default function Hero({ page }: HeroProps) {
 
   const item = {
     title:
-      "A state-of-the-art studio facility that thrives on bringing creative ideas to life.",
-    tag: 1997,
+      "A bespoke digital studio where brand identity design and engineering become one",
+    tag: "Digital studio",
     scrollLabel: "Scroll Down",
   };
 
@@ -67,7 +67,7 @@ export default function Hero({ page }: HeroProps) {
                 className={a.moveUp}
                 style={{ "--delay": "0.56s" } as React.CSSProperties}
               >
-                Since {item.tag}
+                {item.tag}
               </div>
             </div>
             <div className={c(s.title, t.xl)}>

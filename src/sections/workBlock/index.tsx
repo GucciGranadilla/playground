@@ -25,8 +25,10 @@ export default function WorkBlock({ page }: WorkBlockProps) {
   return (
     <section className={s.root} data-nav-bg>
       <div className={s.header}>
-        <span className={c(s.client, t.md)}>{page.client}</span>
+        <span className={c(s.client, t.tag)}>{page.client}</span>
+        <span className={c(s.year, t.tag)}>{page.year}</span>
         <h1 className={c(s.title, t.xxl)}>{page.title}</h1>
+        <p className={c(s.excerpt, t.p)}>{page.excerpt}</p>
       </div>
 
       <div className={s.blocks}>

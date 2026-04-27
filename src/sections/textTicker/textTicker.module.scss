@@ -5,7 +5,7 @@
   grid-template-columns: repeat(8, 1fr);
   grid-template-rows: auto 1fr;
   gap: 12rem;
-  padding: 60rem 12rem;
+  padding: 60rem 12rem 80rem;
 }
 
 .blocks {
@@ -79,10 +79,10 @@
   height: 1px;
   background: repeating-linear-gradient(
     to right,
-    rgba(0, 0, 0, 0.2) 0,
-    rgba(0, 0, 0, 0.2) 3rem,
-    transparent 2rem,
-    transparent 4rem
+    $lgrey 0,
+    $lgrey 3px,
+    transparent 2px,
+    transparent 4px
   );
   position: relative;
   overflow: hidden;
