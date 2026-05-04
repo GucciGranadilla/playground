@@ -16,7 +16,7 @@ const BASE = WORK_ITEMS.map((item) => item.cardImage);
 const COL_A_BASE = BASE.filter((_, i) => i % 2 === 0);
 const COL_B_BASE = BASE.filter((_, i) => i % 2 !== 0);
 const COL_A = [...COL_A_BASE, ...COL_A_BASE];
-const COL_B = [...COL_B_BASE, ...COL_B_BASE];
+const COL_B = [...COL_B_BASE, ...COL_B_BASE, ...COL_B_BASE];
 
 export default function ContactPreview() {
   const colARef = useRef<HTMLDivElement>(null);
@@ -43,7 +43,7 @@ export default function ContactPreview() {
 
     const measure = () => {
       halfA = colA.scrollHeight / 2;
-      halfB = colB.scrollHeight / 2;
+      halfB = colB.scrollHeight / 3;
       stagger = halfB * 0.4;
     };
 

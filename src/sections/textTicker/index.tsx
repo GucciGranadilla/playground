@@ -36,7 +36,7 @@ const items = {
   ],
   link: {
     href: "/about",
-    label: "About Kevin",
+    label: "View Studio",
   },
 };
 
