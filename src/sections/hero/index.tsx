@@ -85,7 +85,7 @@ export default function Hero({ page }: HeroProps) {
                 className={a.moveUp}
                 style={{ "--delay": "0.8s" } as React.CSSProperties}
               >
-                <CapeTownTime className={c(s.time, t.cta)} />
+                <CapeTownTime className={c(s.time, t.cta)} showStatus />
               </div>
             </div>
             <div style={{ overflow: "clip" }}>

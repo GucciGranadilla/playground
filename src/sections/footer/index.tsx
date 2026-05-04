@@ -135,23 +135,23 @@ export default function Footer({ page }: FooterProps) {
             <ul>
               {items.links.map((link, i) => (
                 <li key={i}>
-                  <Link href={link.href} className={c(s.link, t.l)}>
+                  <Link href={link.href} className={c(s.link, t.cta)}>
                     {link.label}
                     {i < items.links.length - 1 ? "," : ""}
                   </Link>
                 </li>
               ))}
             </ul>
-            <div className={s.newsletter}>
+            {/* <div className={s.newsletter}>
               <p className={t.p}>{items.contact.text}</p>
               <a href={items.contact.link.href} className={c(s.link, t.cta)}>
                 {items.contact.link.label}
               </a>
-            </div>
+            </div> */}
           </div>
           <div className={s.bottom}>
             <p className={c(s.copyright, t.cta)}>{items.copyright}</p>
-            <CapeTownTime className={c(s.time, t.cta)} />
+            <CapeTownTime className={c(s.time, t.cta)} showStatus />
           </div>
         </div>
       </motion.div>

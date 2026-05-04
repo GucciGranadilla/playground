@@ -1,0 +1,136 @@
+@use "styles/colors" as *;
+
+// ── Page layout ───────────────────────────────────────────────────────────────
+
+.pageLayout {
+  display: grid;
+  grid-template-columns: repeat(8, 1fr);
+  column-gap: 8rem;
+  padding: 0 8rem;
+}
+
+.pageLeft {
+  grid-column: 1 / 7;
+  min-width: 0;
+}
+
+// ── Intro ─────────────────────────────────────────────────────────────────────
+
+.intro {
+  display: grid;
+  grid-template-columns: repeat(8, 1fr);
+  column-gap: 8rem;
+  padding: calc(var(--nav-height) + 60rem) 8rem 80rem;
+  align-items: start;
+}
+
+.lineWrap {
+  display: block;
+  overflow: clip;
+}
+
+// ── Left column ───────────────────────────────────────────────────────────────
+
+.left {
+  grid-column: 1 / 5;
+  display: flex;
+  flex-direction: column;
+}
+
+.hoverImg {
+  grid-column: 7 / 9;
+  align-self: stretch;
+  overflow: hidden;
+  position: relative;
+}
+
+.statement {
+  display: flex;
+  flex-direction: column;
+  // mix-blend-mode: difference;
+}
+
+.bio {
+  // color: $grey;
+  line-height: 20rem;
+  margin-top: 48rem;
+  max-width: 36ch;
+}
+
+// ── Column header (shared) ────────────────────────────────────────────────────
+
+.colHead {
+  margin-bottom: 24rem;
+}
+
+.colLabel {
+  color: $grey;
+}
+
+// ── Services column ───────────────────────────────────────────────────────────
+
+.servicesCol {
+  grid-column: 5 / 7;
+}
+
+.servicesList {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.serviceRow {
+  padding: 0;
+}
+
+.serviceName {
+  color: $black;
+}
+
+// ── Recognition column ────────────────────────────────────────────────────────
+
+.recognitionCol {
+  grid-column: 7 / 9;
+}
+
+.awardsList {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.awardRow {
+  padding: 0;
+  display: flex;
+  gap: 8rem;
+}
+
+.awardMeta {
+  color: $black;
+}
+
+// ── Shared block ──────────────────────────────────────────────────────────────
+
+.block {
+  padding: 0 0 60rem;
+}
+
+.blockInner {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  column-gap: 8rem;
+  // border-top: 1px dashed $lgrey;
+}
+
+.blockLabel {
+  grid-column: 1 / 3;
+  color: $grey;
+}
+// ── Shared block list ─────────────────────────────────────────────────────────
+
+.blockList {
+  grid-column: 5 / 7;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}

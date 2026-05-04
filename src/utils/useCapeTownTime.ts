@@ -9,12 +9,12 @@ export function useCapeTownTime() {
 	useEffect(() => {
 		const updateTime = () => {
 			const capeTownTime = DateTime.now().setZone('Africa/Johannesburg')
-			const formattedTime = capeTownTime.toFormat('h:mm:ss a')
+			const formattedTime = capeTownTime.toFormat('hh:mm:ss a')
 			const timezone = capeTownTime.toFormat('ZZZZ')
 			setCurrentTime(`${formattedTime} (${timezone})`)
 
 			const hour = capeTownTime.hour
-			const newBusinessHours = hour >= 9 && hour < 17
+			const newBusinessHours = hour >= 8 && hour < 17
 			if (newBusinessHours !== isBusinessHours) {
 				setIsTransitioning(true)
 				setTimeout(() => setIsTransitioning(false), 1000)

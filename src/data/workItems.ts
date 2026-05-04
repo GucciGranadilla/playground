@@ -6,14 +6,16 @@ export interface WorkImage {
 
 export interface WorkGridImage extends WorkImage {
   type: "image";
-  gridSpan: 4 | 8;
+  gridSpan: 2 | 3 | 4 | 5 | 6 | 8;
+  aspectRatio: string;
 }
 
 export interface WorkGridVideo {
   type: "video";
   mobileSrc: string;
   desktopSrc: string;
-  gridSpan: 4 | 8;
+  gridSpan: 2 | 3 | 4 | 5 | 6 | 8;
+  aspectRatio: string;
 }
 
 export type WorkGridItem = WorkGridImage | WorkGridVideo;
@@ -278,21 +280,27 @@ const RAW = [
   },
 ];
 
-const VIDEO_CONFIGS: Array<{ pos: number; gridSpan: 4 | 8 }> = [
-  { pos: 4, gridSpan: 8 },
-  { pos: 10, gridSpan: 4 },
-  { pos: 16, gridSpan: 8 },
+const VIDEO_CONFIGS: Array<{ pos: number; gridSpan: 2 | 3 | 4 | 5 | 6 | 8; aspectRatio: string }> = [
+  { pos: 4, gridSpan: 8, aspectRatio: "16/9" },
+  { pos: 10, gridSpan: 4, aspectRatio: "4/3" },
+  { pos: 16, gridSpan: 8, aspectRatio: "16/9" },
 ];
 const VIDEO_POSITIONS = new Set(VIDEO_CONFIGS.map((v) => v.pos));
 
-// Spans for each image slot (23 total) computed so every 8-col row is complete
-// even when a 4-wide video at pos 10 consumes half a row.
-const IMAGE_SPANS: (4 | 8)[] = [
-  8, 4, 4, 8,         // before video 0
-  8, 4, 4, 8, 8,     // between video 0 and video 1
-  4,                   // pairs with video 1 (span 4)
-  4, 4, 8, 8,         // after that pair
-  8, 4, 4, 8, 8, 4, 4, 8, 8, // after video 2
+const IMAGE_SPANS: (2 | 3 | 4 | 5 | 6 | 8)[] = [
+  8, 5, 3, 8,            // before video 0
+  6, 2, 8, 4, 4,         // between video 0 and video 1
+  4,                      // pairs with video 1 (span 4)
+  8, 5, 3, 8,            // after that pair, before video 2
+  4, 4, 8, 3, 5, 8, 2, 6, 8, // after video 2
+];
+
+const IMAGE_ASPECT_RATIOS: string[] = [
+  "16/9", "4/3",  "3/4",  "16/9",
+  "3/2",  "1/1",  "16/9", "3/4",  "4/3",
+  "4/3",
+  "16/9", "3/2",  "2/3",  "16/9",
+  "1/1",  "3/4",  "21/9", "2/3",  "4/3",  "16/9", "1/1",  "3/2",  "16/9",
 ];
 
 const TEST_VIDEOS = [
@@ -322,6 +330,7 @@ export const WORK_ITEMS: WorkItem[] = RAW.map((item, i) => {
         mobileSrc: src,
         desktopSrc: src,
         gridSpan: config.gridSpan,
+        aspectRatio: config.aspectRatio,
       });
       videoIdx++;
     } else {
@@ -332,6 +341,7 @@ export const WORK_ITEMS: WorkItem[] = RAW.map((item, i) => {
         width: o.width,
         height: o.height,
         gridSpan: IMAGE_SPANS[imgIdx] ?? 8,
+        aspectRatio: IMAGE_ASPECT_RATIOS[imgIdx] ?? "16/9",
       });
       imgIdx++;
     }

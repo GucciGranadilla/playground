@@ -22,11 +22,11 @@
 .inner {
   position: relative;
   overflow: clip;
-  padding: 14rem 12rem 6rem;
+  padding: 8rem 8rem 4rem;
   display: grid;
   align-items: center;
   grid-template-columns: repeat(12, 1fr);
-  gap: 12rem;
+  gap: 8rem;
   color: $white;
 }
 
@@ -50,9 +50,31 @@
 .menu {
   grid-column: 7/9;
   display: flex;
-  gap: 4rem;
+  align-items: center;
   mix-blend-mode: difference;
   position: relative;
+  gap: 8rem;
+}
+
+.menuPill {
+  position: absolute;
+  top: -2rem;
+  bottom: -2rem;
+  left: -4rem;
+  width: 0;
+  background: $eblack;
+  border-radius: 2rem;
+  pointer-events: none;
+  will-change: transform, width;
+  z-index: 0;
+}
+
+.menuItem {
+  position: relative;
+  z-index: 1;
+  overflow: clip;
+  padding: 4rem 0;
+  cursor: pointer;
 }
 
 .button {

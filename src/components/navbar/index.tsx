@@ -9,6 +9,14 @@ import t from "@/styles/text.module.scss";
 import a from "@/styles/ani.module.scss";
 import c from "@/utils/classNames";
 
+const NAV_ITEMS = [
+  { href: "/work", label: "index" },
+  { href: "/about", label: "studio" },
+  { href: "/contact-preview", label: "contact" },
+];
+
+const DELAYS = ["0.38s", "0.43s", "0.48s"];
+
 interface NavbarProps {
   page?: string;
   settings?: unknown;
@@ -18,12 +26,74 @@ export default function Navbar({ page }: NavbarProps) {
   const router = useRouter();
   const lenis = useLenis();
   const navRef = useRef<HTMLElement>(null);
+  const menuRef = useRef<HTMLUListElement>(null);
+  const pillRef = useRef<HTMLDivElement>(null);
+  const itemRefs = useRef<(HTMLDivElement | null)[]>([]);
   const offsetRef = useRef(0);
   const prevScrollRef = useRef(0);
   const updateBgRef = useRef<() => void>(() => {});
   const tickerFnRef = useRef<(() => void) | null>(null);
   const bgWasVisibleRef = useRef(false);
 
+  // ── Sliding pill ──────────────────────────────────────────────────────────
+  useEffect(() => {
+    const menu = menuRef.current;
+    const pill = pillRef.current;
+    const items = itemRefs.current;
+    if (!menu || !pill || !items.length) return;
+
+    const activeIdx = NAV_ITEMS.findIndex(
+      ({ href }) =>
+        router.pathname === href || router.pathname.startsWith(href + "/"),
+    );
+
+    const movePill = (el: HTMLDivElement, animate: boolean) => {
+      const menuRect = menu.getBoundingClientRect();
+      const elRect = el.getBoundingClientRect();
+      const remPx = parseFloat(
+        getComputedStyle(document.documentElement).fontSize,
+      );
+      const props = {
+        x: elRect.left - menuRect.left,
+        width: elRect.width + remPx * 8,
+        opacity: 1,
+      };
+      if (animate) gsap.to(pill, { ...props, duration: 0.6, ease: "expo.out" });
+      else gsap.set(pill, props);
+    };
+
+    const activeEl = activeIdx >= 0 ? items[activeIdx] : null;
+    const cleanups: (() => void)[] = [];
+
+    if (activeEl) {
+      movePill(activeEl, false);
+    } else {
+      // Let the pill ride off-screen with the nav slide (0.6s), then reset
+      const tid = setTimeout(
+        () => gsap.set(pill, { opacity: 0, width: 0 }),
+        750,
+      );
+      cleanups.push(() => clearTimeout(tid));
+    }
+
+    items.forEach((item) => {
+      if (!item) return;
+      const onEnter = () => movePill(item, true);
+      item.addEventListener("mouseenter", onEnter);
+      cleanups.push(() => item.removeEventListener("mouseenter", onEnter));
+    });
+
+    const onLeave = () => {
+      if (activeEl) movePill(activeEl, true);
+      else gsap.to(pill, { opacity: 0, duration: 0.2 });
+    };
+    menu.addEventListener("mouseleave", onLeave);
+    cleanups.push(() => menu.removeEventListener("mouseleave", onLeave));
+
+    return () => cleanups.forEach((fn) => fn());
+  }, [router.pathname]);
+
+  // ── Route transitions ─────────────────────────────────────────────────────
   useEffect(() => {
     const nav = navRef.current;
     if (!nav) return;
@@ -32,12 +102,9 @@ export default function Navbar({ page }: NavbarProps) {
       nav.classList.add(s.sliding);
       nav.style.setProperty("--nav-offset", "100px");
       offsetRef.current = 100;
-      // Capture whether navBg is visible right now so the exit push-up only
-      // fires when there's actually something to push out.
       const offsetStr = nav.style.getPropertyValue("--nav-bg-offset");
       const navH = nav.offsetHeight;
       bgWasVisibleRef.current = !!offsetStr && parseInt(offsetStr) < navH + 2;
-      // Kill any in-flight ticker from a previous transition
       if (tickerFnRef.current) {
         gsap.ticker.remove(tickerFnRef.current);
         tickerFnRef.current = null;
@@ -46,15 +113,14 @@ export default function Navbar({ page }: NavbarProps) {
 
     const handleRouteComplete = () => {
       prevScrollRef.current = 0;
-
-      // Always wait for the page animation to complete before bringing nav back
+      // Start returning after page enter is underway — nav lands (~0.6s) as page settles (~1s)
       setTimeout(() => {
         offsetRef.current = 0;
         nav.style.setProperty("--nav-offset", "0px");
         setTimeout(() => nav.classList.remove(s.sliding), 750);
       }, 1000);
 
-      // Drive updateBg every frame during the 1s page enter animation.
+      // Drive updateBg every frame through the full nav return arc
       const fn = updateBgRef.current;
       tickerFnRef.current = fn;
       gsap.ticker.add(fn);
@@ -73,6 +139,7 @@ export default function Navbar({ page }: NavbarProps) {
     };
   }, [router]);
 
+  // ── Scroll / nav-bg ───────────────────────────────────────────────────────
   useEffect(() => {
     const nav = navRef.current;
     if (!nav || !lenis) return;
@@ -101,30 +168,23 @@ export default function Navbar({ page }: NavbarProps) {
       );
 
       if (alwaysBg) {
-        // Track the section's live top position — getBoundingClientRect reflects
-        // the Framer Motion y-translate so the bg slides in with the page content
         const sectionTop = alwaysBg.getBoundingClientRect().top;
-        const bgOffset = Math.round(
-          Math.min(hiddenPos, Math.max(0, sectionTop)),
+        nav.style.setProperty(
+          "--nav-bg-offset",
+          `${Math.round(Math.min(hiddenPos, Math.max(0, sectionTop)))}px`,
         );
-        nav.style.setProperty("--nav-bg-offset", `${bgOffset}px`);
       } else {
         const innerTop = pageInner?.getBoundingClientRect().top ?? 0;
-
         if (innerTop > 0 && bgWasVisibleRef.current) {
-          // New page entering from 100vh — push navBg upward in the final navH px
-          // of travel, then snap to hiddenPos so it's ready for the next entry.
-          // Only fires if the bg was actually visible when the route change started.
           const rawOffset = Math.min(0, innerTop - navH);
           const bgOffset = rawOffset <= -navH ? hiddenPos : rawOffset;
           nav.style.setProperty("--nav-bg-offset", `${Math.round(bgOffset)}px`);
         } else if (hero) {
-          // Page at rest — standard hero-bottom scroll tracking
           const heroBottom = hero.getBoundingClientRect().bottom;
-          const bgOffset = Math.round(
-            Math.min(hiddenPos, Math.max(0, heroBottom + offsetRef.current)),
+          nav.style.setProperty(
+            "--nav-bg-offset",
+            `${Math.round(Math.min(hiddenPos, Math.max(0, heroBottom + offsetRef.current)))}px`,
           );
-          nav.style.setProperty("--nav-bg-offset", `${bgOffset}px`);
         } else {
           nav.style.setProperty("--nav-bg-offset", `${hiddenPos}px`);
         }
@@ -138,7 +198,6 @@ export default function Navbar({ page }: NavbarProps) {
       const scroll = window.scrollY;
       const delta = scroll - prevScrollRef.current;
       prevScrollRef.current = scroll;
-
       offsetRef.current = Math.round(
         Math.min(navH, Math.max(0, offsetRef.current + delta)),
       );
@@ -147,7 +206,6 @@ export default function Navbar({ page }: NavbarProps) {
         "--nav-offset",
         `${offsetRef.current}px`,
       );
-
       updateBg();
     };
 
@@ -177,39 +235,32 @@ export default function Navbar({ page }: NavbarProps) {
             kevin:davis
           </div>
         </Link>
-        <ul className={c(s.menu, t.cta)}>
-          <div style={{ overflow: "clip" }}>
-            <Link
-              href="/work"
-              className={a.moveUp}
-              style={{ "--delay": "0.38s" } as React.CSSProperties}
-            >
-              work,
-            </Link>
-          </div>
-          <div style={{ overflow: "clip" }}>
+        <ul className={c(s.menu, t.cta)} ref={menuRef}>
+          <div className={s.menuPill} ref={pillRef} />
+          {NAV_ITEMS.map(({ href, label }, i) => (
             <div
-              className={a.moveUp}
-              style={{ "--delay": "0.43s" } as React.CSSProperties}
+              key={href}
+              ref={(el) => {
+                itemRefs.current[i] = el;
+              }}
+              className={s.menuItem}
             >
-              about,
+              <Link
+                href={href}
+                className={a.moveUp}
+                style={{ "--delay": DELAYS[i] } as React.CSSProperties}
+              >
+                {label}
+              </Link>
             </div>
-          </div>
-          <div style={{ overflow: "clip" }}>
-            <div
-              className={a.moveUp}
-              style={{ "--delay": "0.48s" } as React.CSSProperties}
-            >
-              contact
-            </div>
-          </div>
+          ))}
         </ul>
         <div className={c(s.button, t.cta)} style={{ overflow: "clip" }}>
           <div
             className={a.moveUp}
             style={{ "--delay": "0.52s" } as React.CSSProperties}
           >
-            get in touch
+            version 0.0.1 [2026]
           </div>
         </div>
       </div>

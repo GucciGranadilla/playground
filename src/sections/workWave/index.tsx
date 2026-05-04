@@ -204,7 +204,11 @@ export default function WorkWave() {
       <div ref={wrapperRef} className={s.wrapper}>
         <div ref={leftColRef} className={s.columnLeft}>
           {LEFT.map((item, i) => (
-            <div key={i} className={c(s.item, t.xl)} data-image={item.cardImage.src}>
+            <div
+              key={i}
+              className={c(s.item, t.l)}
+              data-image={item.cardImage.src}
+            >
               {item.text}
             </div>
           ))}
@@ -218,7 +222,9 @@ export default function WorkWave() {
                 fill
                 className={s.thumbnail}
                 sizes="(max-width: 1023px) 50vw, 15vw"
-                placeholder={imagePlaceholders[item.cardImage.src] ? "blur" : "empty"}
+                placeholder={
+                  imagePlaceholders[item.cardImage.src] ? "blur" : "empty"
+                }
                 blurDataURL={imagePlaceholders[item.cardImage.src]}
                 alt=""
               />
@@ -228,7 +234,7 @@ export default function WorkWave() {
 
         <div ref={rightColRef} className={s.columnRight}>
           {RIGHT.map((label, i) => (
-            <div key={i} className={c(s.item, t.xl)}>
+            <div key={i} className={c(s.item, t.l)}>
               {label}
             </div>
           ))}
@@ -242,7 +248,9 @@ export default function WorkWave() {
                 fill
                 className={s.bgthumbnail}
                 sizes="100vw"
-                placeholder={imagePlaceholders[item.heroImage.src] ? "blur" : "empty"}
+                placeholder={
+                  imagePlaceholders[item.heroImage.src] ? "blur" : "empty"
+                }
                 blurDataURL={imagePlaceholders[item.heroImage.src]}
                 alt=""
               />

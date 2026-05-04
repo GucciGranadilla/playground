@@ -18,20 +18,22 @@ if (typeof window !== "undefined") {
   gsap.registerPlugin(ScrollTrigger);
 }
 
-const SLIDES = WORK_ITEMS.filter((w) => w.featured).slice(0, 5).map((w) => ({
-  src: w.cardImage.src,
-  label: w.title,
-  client: w.client,
-  href: `/work/${w.slug}`,
-  excerpt: w.excerpt,
-  year: w.year,
-}));
+const SLIDES = WORK_ITEMS.filter((w) => w.featured)
+  .slice(0, 5)
+  .map((w) => ({
+    src: w.cardImage.src,
+    label: w.title,
+    client: w.client,
+    href: `/work/${w.slug}`,
+    excerpt: w.excerpt,
+    year: w.year,
+  }));
 
 const clamp = (n: number, min: number, max: number) =>
   Math.min(Math.max(n, min), max);
 
-const INACTIVE_SCALE_X = 341 / 1046;
-const INACTIVE_SCALE_Y = 347 / 820;
+const INACTIVE_SCALE_X = 350 / 1066;
+const INACTIVE_SCALE_Y = 347 / 810;
 
 export default function Slider({ page: _page }: { page?: string }) {
   const sectionRef = useRef<HTMLElement>(null);

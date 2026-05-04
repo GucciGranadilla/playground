@@ -19,8 +19,8 @@
   & .center {
     display: grid;
     grid-template-columns: repeat(8, 1fr);
-    column-gap: 12rem;
-    padding: 12rem;
+    column-gap: 8rem;
+    padding: 8rem;
     align-self: center;
     grid-row: 2;
 
@@ -39,7 +39,7 @@
     display: flex;
     justify-content: space-between;
     align-items: flex-end;
-    padding: 12rem;
+    padding: 8rem;
     grid-row: 3;
 
     & .time,

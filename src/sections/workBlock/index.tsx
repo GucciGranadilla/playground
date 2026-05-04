@@ -27,7 +27,7 @@ export default function WorkBlock({ page }: WorkBlockProps) {
       <div className={s.header}>
         <span className={c(s.client, t.tag)}>{page.client}</span>
         <span className={c(s.year, t.tag)}>{page.year}</span>
-        <h1 className={c(s.title, t.xxl)}>{page.title}</h1>
+        <h1 className={c(s.title, t.xl)}>{page.title}</h1>
         <p className={c(s.excerpt, t.p)}>{page.excerpt}</p>
       </div>
 
@@ -35,8 +35,11 @@ export default function WorkBlock({ page }: WorkBlockProps) {
         {page.images.map((item, i) => (
           <div
             key={i}
-            className={c(s.cell, item.gridSpan === 8 ? s.full : null)}
-            style={{ gridColumn: `span ${item.gridSpan}` }}
+            className={s.cell}
+            style={{
+              gridColumn: `span ${item.gridSpan}`,
+              aspectRatio: item.aspectRatio,
+            }}
           >
             {item.type === "video" ? (
               <Video
@@ -50,7 +53,7 @@ export default function WorkBlock({ page }: WorkBlockProps) {
               <ParallaxImage
                 src={item.src}
                 alt={`${page.title} — ${page.client}`}
-                sizes={item.gridSpan === 8 ? "96vw" : "48vw"}
+                sizes={`${Math.round((item.gridSpan / 8) * 96)}vw`}
                 className={s.image}
               />
             )}

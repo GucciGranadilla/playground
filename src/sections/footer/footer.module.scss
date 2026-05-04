@@ -83,7 +83,7 @@
   grid-column: 1;
   align-self: stretch;
   width: 100%;
-  max-width: 464rem;
+  max-width: 364rem;
   border: 2rem solid $white;
   pointer-events: none;
   z-index: 1;
@@ -102,7 +102,7 @@
 .content,
 .logoWrapper {
   width: 100%;
-  max-width: 464rem;
+  max-width: 364rem;
 }
 .content {
   position: relative;
@@ -156,5 +156,5 @@
 .bottom {
   display: flex;
   justify-content: space-between;
-  padding: 12rem 24rem 24rem;
+  padding: 8rem 24rem 24rem;
 }

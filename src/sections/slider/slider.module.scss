@@ -2,7 +2,7 @@
 @use "styles/colors" as *;
 
 .root {
-  padding: 80rem 12rem;
+  padding: 60rem 8rem;
   overflow: clip;
 }
 
@@ -13,17 +13,17 @@
 .container {
   display: flex;
   align-items: flex-end;
-  gap: 12rem;
+  gap: 8rem;
 }
 
 .slide {
-  flex: 0 0 1058rem;
+  flex: 0 0 1066rem;
   height: 820rem;
   flex-shrink: 0;
   overflow: clip;
 
   &:last-child {
-    margin-right: 12rem;
+    margin-right: 8rem;
   }
 
   &:hover .slideInner .slideImage {
@@ -61,7 +61,7 @@
 .bottom {
   display: grid;
   grid-template-columns: repeat(8, 1fr);
-  gap: 12rem;
+  gap: 8rem;
 }
 .controls {
   grid-column: 2;
@@ -69,8 +69,8 @@
   align-self: flex-start;
   display: flex;
   align-items: center;
-  gap: 10rem;
-  margin-top: 12rem;
+  gap: 8rem;
+  margin-top: 8rem;
 }
 
 .btn {
@@ -97,8 +97,8 @@
   grid-column: 3/-1;
   display: grid;
   grid-template-columns: repeat(6, 1fr);
-  gap: 12rem;
-  margin-top: 20rem;
+  gap: 8rem;
+  margin-top: 16rem;
 }
 .slideLabel {
   grid-column: 1/3;
@@ -129,5 +129,5 @@
   align-items: center;
   justify-content: center;
   text-align: center;
-  margin-top: 12rem;
+  margin-top: 8rem;
 }
