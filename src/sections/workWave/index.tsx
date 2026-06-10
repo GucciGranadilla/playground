@@ -5,6 +5,7 @@ import Image from "next/image";
 import Router from "next/router";
 import Link from "next/link";
 import gsap from "gsap";
+
 import { useLenis } from "lenis/react";
 import s from "./workWave.module.scss";
 import t from "@/styles/text.module.scss";
@@ -40,12 +41,14 @@ export default function WorkWave() {
   const thumbnailWrapperRef = useRef<HTMLDivElement>(null);
   const [activeIndex, setActiveIndex] = useState(0);
 
+
   useEffect(() => {
     if (isMobile === undefined) return;
     const wrapper = wrapperRef.current;
     const leftCol = leftColRef.current;
     const rightCol = rightColRef.current;
     if (!wrapper || !leftCol || !rightCol) return;
+
 
     document.documentElement.style.setProperty(
       "--accent",
@@ -134,6 +137,7 @@ export default function WorkWave() {
       gsap.set(bgSlots[newIndex], { opacity: 1 });
       activeSlot = newIndex;
       setActiveIndex(newIndex);
+
     };
 
     const handleScroll = ({ scroll }: { scroll: number }) => {
@@ -167,6 +171,7 @@ export default function WorkWave() {
     const onWheel = (e: WheelEvent) => {
       e.preventDefault();
       targetScroll += e.deltaY;
+
     };
 
     let lastTouchY = 0;
@@ -210,6 +215,7 @@ export default function WorkWave() {
 
     const onResize = () => {
       oneSetHeight = measureOneSetHeight();
+
     };
 
     const initAnimation = () => {
@@ -237,6 +243,7 @@ export default function WorkWave() {
       window.removeEventListener("touchmove", onTouchMove);
       window.removeEventListener("touchend", onTouchEnd);
       window.removeEventListener("resize", onResize);
+
       audioCtx.close();
     };
 
@@ -290,6 +297,7 @@ export default function WorkWave() {
               />
             </div>
           ))}
+
         </div>
 
         <div ref={rightColRef} className={s.columnRight}>

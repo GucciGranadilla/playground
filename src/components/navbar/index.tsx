@@ -2,6 +2,7 @@ import { useRef, useEffect, useLayoutEffect, useState } from "react";
 import { useRouter } from "next/router";
 import { useLenis } from "lenis/react";
 import gsap from "gsap";
+
 import Link from "next/link";
 
 import s from "./navbar.module.scss";
@@ -30,6 +31,7 @@ export default function Navbar({ page }: NavbarProps) {
   const lenis = useLenis();
   const { muted, toggleMuted, mutedRef } = useSound();
   const [isOpen, setIsOpen] = useState(false);
+
   const navRef = useRef<HTMLElement>(null);
   const menuRef = useRef<HTMLUListElement>(null);
   const pillRef = useRef<HTMLDivElement>(null);
@@ -264,6 +266,7 @@ export default function Navbar({ page }: NavbarProps) {
       `${navHeight}px`,
     );
 
+
     const updateBg = () => {
       const navH = nav.offsetHeight;
       const hiddenPos = navH + 2;
@@ -319,6 +322,7 @@ export default function Navbar({ page }: NavbarProps) {
       const scroll = Math.max(0, window.scrollY);
       const delta = scroll - prevScrollRef.current;
       prevScrollRef.current = scroll;
+
       offsetRef.current = Math.round(
         Math.min(navH, Math.max(0, offsetRef.current + delta)),
       );
@@ -329,6 +333,7 @@ export default function Navbar({ page }: NavbarProps) {
       );
       updateBg();
     };
+
 
     const handleResetNav = () => {
       offsetRef.current = 0;
@@ -347,6 +352,7 @@ export default function Navbar({ page }: NavbarProps) {
       lenis.off("scroll", onScroll);
       window.removeEventListener("resize", updateBg);
       window.removeEventListener("resetNavPosition", handleResetNav);
+
     };
   }, [lenis]);
 

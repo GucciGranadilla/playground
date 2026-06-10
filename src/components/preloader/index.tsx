@@ -329,11 +329,13 @@ export default function Preloader({ disabled }: { disabled?: boolean }) {
 
   const handleEnter = () => {
     lenis?.start();
+
     if (!mutedRef.current) {
       const dubAudio = new Audio("/effects/dub.mp3");
       dubAudio.volume = 0.25;
       dubAudio.play().catch(() => {});
     }
+
     document.documentElement.classList.add(a.ready);
     if (enterTextRef.current) {
       gsap.to(enterTextRef.current, {

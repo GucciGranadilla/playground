@@ -1,6 +1,7 @@
 import { ReactNode, useEffect } from "react";
 import { ReactLenis, useLenis } from "lenis/react";
 import Lenis from "lenis";
+
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 
@@ -12,9 +13,8 @@ interface LenisProviderProps {
   children: ReactNode;
 }
 
-interface WindowWithLenis extends Window {
-  lenis?: Lenis;
-}
+function LenisGSAPSync() {
+  const lenis = useLenis();
 
 function LenisGSAPSync() {
   const lenis = useLenis();
@@ -61,6 +61,7 @@ export default function LenisProvider({ children }: LenisProviderProps) {
         gestureOrientation: "vertical",
         autoRaf: false,
         anchors: true,
+
       }}
     >
       <LenisGSAPSync />
