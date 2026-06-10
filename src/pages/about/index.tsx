@@ -23,8 +23,7 @@ import a from "@/styles/ani.module.scss";
 import TextBlock from "@/sections/textBlock";
 
 const STUDIO_STATEMENT =
-  "Kevin Davis Studio is a brand identity and web design practice founded by Kevin Davis in Cape Town, creating bespoke identity systems and digital experiences. Working at the intersection of strategy and craft, with a focus on identities that survive past the launch. Engagements receive complete personal attention — no junior hand-offs, no diluted thinking.";
-
+  "Kevin Davis Studio is a brand identity and web design practice in Cape Town, creating bespoke identity systems and digital experiences. Working at the intersection of strategy and craft, with a focus on identities that survive past the launch.";
 const ABOUT_TEXT = [
   "Led by the dynamic and well-connected Gavin Schneider, known for his charismatic energy and unparalleled ability to secure the best locations, talent, and rates, our team brings extensive industry knowledge and a steadfast commitment to each project.",
   "Our dedicated production team manages every aspect of the process, from initial concept to final execution, ensuring a seamless and world-class experience.",
@@ -195,7 +194,7 @@ export default function About() {
         {/* ── Statement + sidebar ─────────────────────────────────── */}
         <section ref={sectionRef} className={s.intro}>
           <div className={s.statementWrap}>
-            <h1 className={c(s.statement, t.l)}>{STUDIO_STATEMENT}</h1>
+            <h1 className={c(s.statement, t.xl)}>{STUDIO_STATEMENT}</h1>
           </div>
 
           <div className={c(s.content)} ref={contentWrapperRef}>

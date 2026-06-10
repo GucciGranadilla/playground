@@ -18,13 +18,13 @@
 .xl,
 .l,
 .tag {
-  font-family: "Exposure", "Questrial", sans-serif;
+  font-family: "Questrial", "Questrial", sans-serif;
+  font-weight: 600;
 }
 
 .xl,
 .l {
-  letter-spacing: -0.04em;
-  font-variation-settings: "EXPO" -10;
+  letter-spacing: 0.01em;
 }
 
 .tag
@@ -54,7 +54,6 @@
 }
 
 .tag {
-  font-variation-settings: "EXPO" -20;
   font-size: 11rem;
   line-height: 11rem;
 }
@@ -69,8 +68,7 @@
   font-size: 20rem;
   line-height: 20rem;
   letter-spacing: -0.02em;
-  font-family: "Exposure", "Questrial", sans-serif;
-  font-variation-settings: "EXPO" -10;
+  font-family: "Questrial", sans-serif;
 }
 
 .red {
@@ -88,7 +86,7 @@
 @media screen and (min-width: 481px) {
   .xl {
     font-size: 42rem;
-    line-height: 50rem;
+    line-height: 46rem;
   }
   .l {
     font-size: 30rem;

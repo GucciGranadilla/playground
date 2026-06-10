@@ -207,7 +207,7 @@ export default function ContactPreview() {
           <div ref={infoWrapperRef} className={s.infoWrapper}>
             <motion.div ref={infoContentRef} className={s.info} style={{ y }}>
               {/* <span className={c(s.infoHeader, t.tag)}>Contact</span> */}
-              <h2 className={c(s.infoTitle, t.l)}>Let's work together</h2>
+              <h2 className={c(s.infoTitle, t.xl)}>Let's work together</h2>
               <p className={c(s.infoIntro, t.p)}>
                 Open to new commissions for brand identity, web design, and
                 development. Every engagement receives full attention.
