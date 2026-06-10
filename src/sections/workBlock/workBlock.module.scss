@@ -1,14 +1,14 @@
 @use "styles/colors" as *;
 
 .root {
-  padding: 280rem 8rem 8rem;
+  padding: 200rem 8rem 4rem;
 }
 
 .header {
   display: grid;
   grid-template-columns: repeat(8, 1fr);
   grid-template-rows: auto auto auto;
-  column-gap: 8rem;
+  column-gap: 4rem;
   margin-bottom: 40rem;
   border-top: 1px dashed $lgrey;
   padding-top: 18rem;
@@ -43,8 +43,8 @@
 .blocks {
   display: grid;
   grid-template-columns: repeat(8, 1fr);
-  column-gap: 8rem;
-  row-gap: 8rem;
+  column-gap: 4rem;
+  row-gap: 4rem;
 }
 
 .cell {

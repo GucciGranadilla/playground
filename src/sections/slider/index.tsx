@@ -12,6 +12,7 @@ import t from "@/styles/text.module.scss";
 import a from "@/styles/ani.module.scss";
 import c from "@/utils/classNames";
 import { randomHue } from "@/utils/randomHue";
+import useMobile from "@/utils/useMobile";
 import { WORK_ITEMS } from "@/data/workItems";
 
 if (typeof window !== "undefined") {
@@ -37,6 +38,7 @@ const INACTIVE_SCALE_Y = 347 / 810;
 
 export default function Slider({ page: _page }: { page?: string }) {
   const sectionRef = useRef<HTMLElement>(null);
+  const isMobile = useMobile();
   const [emblaRef, emblaApi] = useEmblaCarousel({ align: "end", loop: true });
 
   const labelRef = useRef<HTMLElement>(null);
@@ -61,6 +63,7 @@ export default function Slider({ page: _page }: { page?: string }) {
   }, []);
 
   const tweenScale = useCallback((emblaApi: EmblaCarouselType, event?: any) => {
+    if (isMobile) return;
     const engine = emblaApi.internalEngine();
     const scrollProgress = emblaApi.scrollProgress();
     const slidesInView = emblaApi.slidesInView();
@@ -92,14 +95,23 @@ export default function Slider({ page: _page }: { page?: string }) {
       const img = imgNodes.current[slideIndex];
       if (img) img.style.transform = `scaleX(${sy / sx})`;
     });
-  }, []);
+  }, [isMobile]);
 
   useEffect(() => {
     if (!emblaApi) return;
 
     setTweenNodes(emblaApi);
     setTweenFactor(emblaApi);
-    tweenScale(emblaApi);
+    if (isMobile) {
+      tweenNodes.current.forEach((n) => {
+        if (n) n.style.transform = "";
+      });
+      imgNodes.current.forEach((n) => {
+        if (n) n.style.transform = "";
+      });
+    } else {
+      tweenScale(emblaApi);
+    }
 
     const onSelect = (api: EmblaCarouselType) => {
       const next = api.selectedScrollSnap();

@@ -7,11 +7,14 @@ const nextConfig: NextConfig = {
     loadPaths: ["./src"],
   },
   images: {
-    remotePatterns: [{ protocol: "https", hostname: "images.unsplash.com" }],
+    remotePatterns: [
+      { hostname: "cdn.sanity.io" },
+      { protocol: "https", hostname: "images.unsplash.com" },
+    ],
     formats: ["image/avif", "image/webp"],
     deviceSizes: [240, 480, 768, 1024, 1280, 1920, 3072, 4480],
     imageSizes: [],
-    qualities: [75],
+    qualities: [80],
     minimumCacheTTL: 31536000,
   },
 };

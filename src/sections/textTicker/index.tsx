@@ -16,7 +16,7 @@ import a from "@/styles/ani.module.scss";
 import c from "@/utils/classNames";
 import { randomHue } from "@/utils/randomHue";
 import { createAudioChain } from "@/utils/createAudioChain";
-import { link } from "fs";
+import { useSound } from "@/utils/soundContext";
 
 interface TextTickerProps {
   page?: string;
@@ -52,6 +52,7 @@ export default function TextTicker({ page }: TextTickerProps) {
   const textRefs = useRef<(HTMLParagraphElement | null)[]>([]);
   const indicatorFillRefs = useRef<(HTMLSpanElement | null)[]>([]);
   const playRef = useRef<(() => void) | null>(null);
+  const { mutedRef } = useSound();
 
   useEffect(() => {
     const ctx = new AudioContext();
@@ -67,6 +68,7 @@ export default function TextTicker({ page }: TextTickerProps) {
 
     playRef.current = () => {
       if (!buffer) return;
+      if (mutedRef.current) return;
       ctx
         .resume()
         .then(() => {
@@ -82,26 +84,19 @@ export default function TextTicker({ page }: TextTickerProps) {
     return () => {
       ctx.close();
     };
-  }, []);
+  }, [mutedRef]);
 
   const measureRange = () => {
-    const el = containerRef.current;
+    const wrapper = contentWrapperRef.current;
     const content = contentRef.current;
-    if (!el || !content) return;
-    const paddingBottom = parseFloat(getComputedStyle(el).paddingBottom) || 0;
-    const contentTopInSection =
-      content.getBoundingClientRect().top - el.getBoundingClientRect().top;
-    rangeRef.current =
-      el.offsetHeight -
-      contentTopInSection -
-      content.offsetHeight -
-      paddingBottom;
+    if (!wrapper || !content) return;
+    rangeRef.current = wrapper.offsetHeight - content.offsetHeight;
   };
 
   useLayoutEffect(() => {
     measureRange();
     const ro = new ResizeObserver(measureRange);
-    ro.observe(containerRef.current!);
+    ro.observe(contentWrapperRef.current!);
 
     // Set initial text states
     textRefs.current.forEach((el, i) => {
@@ -184,24 +179,6 @@ export default function TextTicker({ page }: TextTickerProps) {
           stagger={0.04}
         />
       </div>
-      <div className={s.blocks}>
-        <div
-          className={c(s.imageWrap)}
-          style={{ "--delay": "0.575s" } as React.CSSProperties}
-        >
-          <ParallaxImage
-            src={items.image.src}
-            alt={items.image.name}
-            sizes="(max-width: 768px) 100vw, 50vw"
-            className={s.image}
-          />
-        </div>
-        <div
-          ref={colorBlockRef}
-          className={c(s.colorBlock)}
-          style={{ "--delay": "0.375s" } as React.CSSProperties}
-        />
-      </div>
       <div className={s.contentWrapper} ref={contentWrapperRef}>
         <motion.div className={s.content} ref={contentRef} style={{ y }}>
           <h2 className={c(s.tag, t.tag)} style={{ overflow: "clip" }}>
@@ -256,6 +233,24 @@ export default function TextTicker({ page }: TextTickerProps) {
             {items.link.label}
           </Link>
         </motion.div>
+      </div>
+      <div className={s.blocks}>
+        <div
+          className={c(s.imageWrap)}
+          style={{ "--delay": "0.575s" } as React.CSSProperties}
+        >
+          <ParallaxImage
+            src={items.image.src}
+            alt={items.image.name}
+            sizes="(min-width: 481px) 50vw, 100vw"
+            className={s.image}
+          />
+        </div>
+        <div
+          ref={colorBlockRef}
+          className={c(s.colorBlock)}
+          style={{ "--delay": "0.375s" } as React.CSSProperties}
+        />
       </div>
     </section>
   );

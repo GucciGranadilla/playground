@@ -1,119 +1,190 @@
 "use client";
 
 import Head from "next/head";
-import Image from "next/image";
-import { useEffect, useRef } from "react";
-import { useInView } from "framer-motion";
+import { useRef, useEffect, useLayoutEffect } from "react";
+import {
+  motion,
+  animate,
+  useScroll,
+  useTransform,
+  useMotionValueEvent,
+} from "framer-motion";
+
+import Footer from "@/sections/footer";
+import { createAudioChain } from "@/utils/createAudioChain";
+import { useSound } from "@/utils/soundContext";
+import CapeTownTime from "@/components/capeTownTime";
+import ParallaxImage from "@/components/parallaxImage";
+
 import s from "./about.module.scss";
 import t from "@/styles/text.module.scss";
-import a from "@/styles/ani.module.scss";
 import c from "@/utils/classNames";
+import a from "@/styles/ani.module.scss";
+import TextBlock from "@/sections/textBlock";
+
+const STUDIO_STATEMENT =
+  "Kevin Davis Studio is a brand identity and web design practice founded by Kevin Davis in Cape Town, creating bespoke identity systems and digital experiences. Working at the intersection of strategy and craft, with a focus on identities that survive past the launch. Engagements receive complete personal attention — no junior hand-offs, no diluted thinking.";
+
+const ABOUT_TEXT = [
+  "Led by the dynamic and well-connected Gavin Schneider, known for his charismatic energy and unparalleled ability to secure the best locations, talent, and rates, our team brings extensive industry knowledge and a steadfast commitment to each project.",
+  "Our dedicated production team manages every aspect of the process, from initial concept to final execution, ensuring a seamless and world-class experience.",
+  "With access to top-tier local crew, trusted suppliers, and the finest locations Cape Town has to offer, we consistently deliver productions that surpass expectations.",
+];
+
+const count = ABOUT_TEXT.length;
 
 const SERVICES = [
   "Brand Identity",
-  "Visual Identity Systems",
   "Art Direction",
-  "Logo Design",
-  "Brand Strategy",
-  "Typography",
   "Web Design",
   "Development",
 ];
 
-const AWARDS = [
-  { year: "2026", platform: "Awwwards", title: "Site of the Day" },
-  { year: "2026", platform: "Awwwards", title: "Honourable Mention [ 2 ]" },
-  { year: "2026", platform: "Awwwards", title: "Hounorary Award" },
-];
-
-const PROCESS = [
-  {
-    title: "Discovery",
-    desc: "Deep-dive into your brand, market, and audience. Understanding the problem before proposing any solutions.",
-  },
-  {
-    title: "Strategy",
-    desc: "Defining positioning, messaging, and creative direction. A clear brief that guides every decision that follows.",
-  },
-  {
-    title: "Design",
-    desc: "Iterative design development — from initial concepts through to refined, production-ready assets.",
-  },
-  {
-    title: "Delivery",
-    desc: "Comprehensive brand guidelines, final files, and handover. Every detail documented and accounted for.",
-  },
+const RECOGNITION = [
+  "Grand Prix [Loeries '24]",
+  "Gold [Loeries '24]",
+  "Jury Member [Awwwards '26]",
+  "Honourary Award [Awwwards '26]",
+  "FWA of the Day [Awwwards '26]",
+  "Site of the Day [Awwwards '26]",
+  "Honourable Mention [Awwwards '26] [×2]",
 ];
 
 const CLIENTS = [
-  "Tesla",
-  "Chanel",
-  "Apple",
-  "BMW",
-  "Saint Laurent",
-  "Nike",
-  "Hermès",
-  "Adidas",
-  "Prada",
-  "Google",
-  "Polestar",
-  "Balenciaga",
-  "Audi",
-  "Valentino",
-  "Samsung",
-  "Bottega Veneta",
-  "Sony",
-  "Aesop",
-  "Dior",
+  "Gavin Schneider Productions",
+  "Freshman",
+  "The Art Of Documentary",
+  "Higherlife Foundation",
+  "Paragon Properties",
+  "Southern Guild",
+  "Goodman Gallery",
+  "Fairways to Africa",
+  "The Healthy Wealth",
 ];
 
-function Block({
-  label,
-  children,
-}: {
-  label: string;
-  children: React.ReactNode;
-}) {
-  const ref = useRef<HTMLElement>(null);
-  const isInView = useInView(ref, { once: true, margin: "0px 0px -8% 0px" });
-
-  useEffect(() => {
-    if (isInView) ref.current?.classList.add(a.inView);
-  }, [isInView]);
-
-  return (
-    <section ref={ref} className={s.block}>
-      <div className={s.blockInner}>
-        <div className={s.blockLabel}>
-          <span className={s.lineWrap}>
-            <span className={c(t.tag, a.moveUpScroll)}>{label}</span>
-          </span>
-        </div>
-        {children}
-      </div>
-    </section>
-  );
-}
+const PLATFORMS: { label: string; href: string }[] = [
+  { label: "Instagram", href: "https://instagram.com" },
+  { label: "Are.na", href: "https://are.na" },
+  { label: "Awwwards", href: "https://awwwards.com" },
+];
 
 export default function About() {
-  const servicesRef = useRef<HTMLDivElement>(null);
-  const awardsRef = useRef<HTMLDivElement>(null);
-  const isServicesInView = useInView(servicesRef, {
-    once: true,
-    margin: "0px 0px -8% 0px",
-  });
-  const isAwardsInView = useInView(awardsRef, {
-    once: true,
-    margin: "0px 0px -8% 0px",
-  });
+  const sectionRef = useRef<HTMLElement>(null);
+  const contentWrapperRef = useRef<HTMLDivElement>(null);
+  const contentInnerRef = useRef<HTMLDivElement>(null);
+  const rangeRef = useRef(0);
+  const lastIndexRef = useRef(0);
+  const textRefs = useRef<(HTMLParagraphElement | null)[]>([]);
+  const indicatorFillRefs = useRef<(HTMLSpanElement | null)[]>([]);
+  const playRef = useRef<(() => void) | null>(null);
+  const { mutedRef } = useSound();
 
   useEffect(() => {
-    if (isServicesInView) servicesRef.current?.classList.add(a.inView);
-  }, [isServicesInView]);
+    const ctx = new AudioContext();
+    let buffer: AudioBuffer | null = null;
 
-  useEffect(() => {
-    if (isAwardsInView) awardsRef.current?.classList.add(a.inView);
-  }, [isAwardsInView]);
+    fetch("/effects/click-modern.wav")
+      .then((r) => r.arrayBuffer())
+      .then((raw) => ctx.decodeAudioData(raw))
+      .then((buf) => {
+        buffer = buf;
+      })
+      .catch(() => {});
+
+    playRef.current = () => {
+      if (!buffer) return;
+      if (mutedRef.current) return;
+      ctx
+        .resume()
+        .then(() => {
+          const src = ctx.createBufferSource();
+          src.buffer = buffer!;
+
+          src.connect(createAudioChain(ctx, 0.12));
+          src.start();
+        })
+        .catch(() => {});
+    };
+
+    return () => {
+      ctx.close();
+    };
+  }, [mutedRef]);
+
+  const measureRange = () => {
+    const wrapper = contentWrapperRef.current;
+    const content = contentInnerRef.current;
+    if (!wrapper || !content) return;
+    const paddingBottom =
+      parseFloat(getComputedStyle(wrapper).paddingBottom) || 0;
+    const contentTopInWrapper =
+      content.getBoundingClientRect().top - wrapper.getBoundingClientRect().top;
+    rangeRef.current =
+      wrapper.offsetHeight -
+      contentTopInWrapper -
+      content.offsetHeight -
+      paddingBottom;
+  };
+
+  useLayoutEffect(() => {
+    measureRange();
+    const ro = new ResizeObserver(measureRange);
+    ro.observe(contentWrapperRef.current!);
+    ro.observe(contentInnerRef.current!);
+
+    // Set initial text states — first visible, rest hidden below.
+    textRefs.current.forEach((el, i) => {
+      if (!el) return;
+      animate(
+        el,
+        { opacity: i === 0 ? 1 : 0, y: i === 0 ? 0 : 20 },
+        { duration: 0 },
+      );
+    });
+
+    return () => ro.disconnect();
+  }, []);
+
+  const { scrollYProgress } = useScroll({
+    target: sectionRef,
+    offset: ["start start", "end 0.35"],
+  });
+
+  const y = useTransform(scrollYProgress, (p) => p * rangeRef.current);
+
+  useMotionValueEvent(scrollYProgress, "change", (progress) => {
+    const raw = progress * count;
+    const index = Math.min(Math.max(Math.floor(raw), 0), count - 1);
+    const progressInStep = Math.min(Math.max(raw - index, 0), 1);
+
+    indicatorFillRefs.current.forEach((fill, i) => {
+      if (!fill) return;
+      const p = i < index ? 1 : i === index ? progressInStep : 0;
+      animate(fill, { scaleX: p }, { duration: 0 });
+    });
+
+    if (index === lastIndexRef.current) return;
+    const forward = index > lastIndexRef.current;
+    const prev = textRefs.current[lastIndexRef.current];
+    const next = textRefs.current[index];
+
+    playRef.current?.();
+
+    if (prev)
+      animate(
+        prev,
+        { opacity: 0, y: forward ? -20 : 20 },
+        { duration: 0.3, ease: [0.4, 0, 0.2, 1] },
+      );
+    if (next)
+      animate(
+        next,
+        { opacity: 1, y: 0 },
+        { duration: 0.3, ease: [0.4, 0, 0.2, 1] },
+      );
+
+    lastIndexRef.current = index;
+  });
 
   return (
     <>
@@ -121,145 +192,137 @@ export default function About() {
         <title>About — Kevin Davis Studio</title>
       </Head>
       <main data-nav-bg>
-        {/* ── Intro ────────────────────────────────────────────────── */}
-        <section className={s.intro}>
-          <div className={s.left}>
-            <h1 className={c(s.statement, t.l)}>
-              {[
-                "Great identity design is never",
-                "decoration — it is the distillation",
-                "of strategy into form.",
-              ].map((line, i) => (
-                <span key={i} className={s.lineWrap}>
-                  <span
-                    className={a.moveUp}
-                    style={
-                      { "--delay": `${0.1 + i * 0.07}s` } as React.CSSProperties
-                    }
+        {/* ── Statement + sidebar ─────────────────────────────────── */}
+        <section ref={sectionRef} className={s.intro}>
+          <div className={s.statementWrap}>
+            <h1 className={c(s.statement, t.l)}>{STUDIO_STATEMENT}</h1>
+          </div>
+
+          <div className={c(s.content)} ref={contentWrapperRef}>
+            <motion.div
+              className={s.contentInner}
+              ref={contentInnerRef}
+              style={{ y }}
+            >
+              <h2 className={c(s.tag, t.tag)} style={{ overflow: "clip" }}>
+                <span
+                  style={
+                    {
+                      "--delay": "0.24s",
+                      display: "block",
+                    } as React.CSSProperties
+                  }
+                >
+                  About
+                </span>
+              </h2>
+              <div className={s.indicators}>
+                {ABOUT_TEXT.map((_, i) => (
+                  <span key={i} className={s.indicator}>
+                    <span
+                      className={s.indicatorFill}
+                      ref={(el) => {
+                        indicatorFillRefs.current[i] = el;
+                      }}
+                    />
+                  </span>
+                ))}
+              </div>
+              <div
+                className={s.textWrap}
+                style={{ "--delay": "0.42s" } as React.CSSProperties}
+              >
+                {ABOUT_TEXT.map((line, i) => (
+                  <p
+                    key={i}
+                    ref={(el) => {
+                      textRefs.current[i] = el;
+                    }}
+                    className={c(s.textItem, t.p)}
                   >
                     {line}
-                  </span>
-                </span>
-              ))}
-            </h1>
-            <p
-              className={c(s.bio, t.p, a.moveUp)}
-              style={{ "--delay": "0.42s" } as React.CSSProperties}
-            >
-              Kevin Davis is an independent brand identity and web designer
-              based in Cape Town, South Africa. Working at the intersection of
-              visual identity and digital experience — every engagement receives
-              complete personal attention. No junior hand-offs, no diluted
-              thinking.
-            </p>
+                  </p>
+                ))}
+              </div>
+            </motion.div>
           </div>
 
-          <div ref={servicesRef} className={s.servicesCol}>
-            <div className={s.colHead}>
-              <span className={s.lineWrap}>
-                <span className={c(s.colLabel, t.tag, a.moveUpScroll)}>
-                  Services
-                </span>
-              </span>
+          <aside className={c(s.sidebar)}>
+            <div className={s.sidebarGroup}>
+              <span className={c(s.sidebarLabel, t.tag)}>Services</span>
+              <ul className={c(s.sidebarList, t.p)}>
+                {SERVICES.map((svc) => (
+                  <li key={svc}>{svc}</li>
+                ))}
+              </ul>
             </div>
-            <ul className={s.servicesList}>
-              {SERVICES.map((svc, i) => (
-                <li key={svc} className={s.serviceRow}>
-                  <span className={s.lineWrap}>
-                    <span
-                      className={c(s.serviceName, t.p, a.moveUpScroll)}
-                      style={
-                        { "--delay": `${i * 0.04}s` } as React.CSSProperties
-                      }
+
+            <div className={s.sidebarGroup}>
+              <span className={c(s.sidebarLabel, t.tag)}>Recognition</span>
+              <ul className={c(s.sidebarList, t.p)}>
+                {RECOGNITION.map((item) => (
+                  <li key={item}>{item}</li>
+                ))}
+              </ul>
+            </div>
+
+            <div className={s.sidebarGroup}>
+              <span className={c(s.sidebarLabel, t.tag)}>Clients</span>
+              <ul className={c(s.sidebarList, t.p)}>
+                {CLIENTS.map((name) => (
+                  <li key={name}>{name}</li>
+                ))}
+              </ul>
+            </div>
+
+            <div className={s.sidebarGroup}>
+              <span className={c(s.sidebarLabel, t.tag)}>Platforms</span>
+              <ul className={c(s.sidebarList, t.p)}>
+                {PLATFORMS.map(({ label, href }) => (
+                  <li key={label}>
+                    <a
+                      className={s.platformLink}
+                      href={href}
+                      target="_blank"
+                      rel="noreferrer"
                     >
-                      {svc}
-                    </span>
-                  </span>
-                </li>
-              ))}
-            </ul>
+                      {label}
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </aside>
+
+          <div className={s.images} aria-hidden>
+            <div className={c(s.imageItem, s.imageWide)}>
+              <ParallaxImage
+                src="/images/profile-photo.jpg"
+                alt=""
+                sizes="(max-width: 1440px) 38vw, 540rem"
+              />
+            </div>
+            <div className={c(s.imageItem, s.imageNarrow)}>
+              <ParallaxImage
+                src="/images/washington.png"
+                alt=""
+                sizes="(max-width: 1440px) 14vw, 180rem"
+              />
+            </div>
           </div>
 
-          <div ref={awardsRef} className={s.recognitionCol}>
-            <div className={s.colHead}>
-              <span className={s.lineWrap}>
-                <span className={c(s.colLabel, t.tag, a.moveUpScroll)}>
-                  Recognition
-                </span>
-              </span>
-            </div>
-            <ul className={s.awardsList}>
-              {AWARDS.map((award, i) => (
-                <li key={i} className={s.awardRow}>
-                  <span className={s.lineWrap}>
-                    <span
-                      className={c(s.awardMeta, t.p, a.moveUpScroll)}
-                      style={
-                        {
-                          "--delay": `${i * 0.06 + 0.04}s`,
-                        } as React.CSSProperties
-                      }
-                    >
-                      {award.platform} — {award.title}
-                    </span>
-                  </span>
-                </li>
-              ))}
-            </ul>
-          </div>
+          {/* <header className={c(s.metaBar, t.cta)}>
+            <span>Kevin Davis Studio</span>
+            <span>Cape Town, ZA</span>
+            <span>Serving Worldwide</span>
+            <CapeTownTime className={s.metaTime} />
+            <span>Available for Commissions</span>
+            <a className={s.metaLink} href="mailto:kevidavis911@gmail.com">
+              Email
+            </a>
+          </header> */}
         </section>
-
-        <div className={s.pageLayout}>
-          <div className={s.pageLeft}>
-
-            {/* ── Process ────────────────────────────────────────────── */}
-            <Block label="Process">
-              <ul className={s.blockList}>
-                {PROCESS.map((step, i) => (
-                  <li key={i} className={s.serviceRow}>
-                    <span className={s.lineWrap}>
-                      <span
-                        className={c(s.serviceName, t.p, a.moveUpScroll)}
-                        style={{ "--delay": `${i * 0.04}s` } as React.CSSProperties}
-                      >
-                        {step.title}
-                      </span>
-                    </span>
-                  </li>
-                ))}
-              </ul>
-            </Block>
-
-            {/* ── Clients ────────────────────────────────────────────── */}
-            <Block label="Clients">
-              <ul className={s.blockList}>
-                {CLIENTS.map((name, i) => (
-                  <li key={name} className={s.serviceRow}>
-                    <span className={s.lineWrap}>
-                      <span
-                        className={c(s.serviceName, t.p, a.moveUpScroll)}
-                        style={{ "--delay": `${i * 0.03}s` } as React.CSSProperties}
-                      >
-                        {name}
-                      </span>
-                    </span>
-                  </li>
-                ))}
-              </ul>
-            </Block>
-
-          </div>
-
-          <div className={s.hoverImg} aria-hidden>
-            <Image
-              src="/images/kevin.jpg"
-              alt=""
-              fill
-              style={{ objectFit: "cover", objectPosition: "center top" }}
-              sizes="(max-width: 1440px) 25vw, 350px"
-            />
-          </div>
-        </div>
+        <Footer page={"about"} />
       </main>
     </>
   );

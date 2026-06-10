@@ -12,9 +12,7 @@ export default function WorkPage({ page }: WorkPageProps) {
   return (
     <>
       <Head>
-        <title>
-          {page.title} — {page.client}
-        </title>
+        <title>{`${page.title} — ${page.client}`}</title>
         <meta name="description" content={`${page.title} by ${page.client}`} />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" href="/favicon.ico" />

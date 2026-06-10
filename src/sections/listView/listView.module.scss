@@ -1,0 +1,171 @@
+@use "styles/colors" as *;
+
+.root {
+  position: relative;
+  width: 100%;
+  // height: 100vh;
+  // overflow: hidden;
+}
+
+.track {
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  // Containing stacking context for the difference blend. Without this the
+  // blend bleeds into ancestors and the backdrop is unpredictable.
+  isolation: isolate;
+  // Backdrop the difference operates against where the pill isn't.
+  background: $white;
+  padding: calc(var(--nav-height) + 0rem) 0 0;
+}
+
+.label {
+  position: relative;
+  flex: 0 0 auto;
+  width: 100%;
+  height: 36rem;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  border: 0;
+  border-top: 1px solid rgb(0, 0, 0, 0.1);
+  padding: 0;
+  background: transparent;
+  cursor: pointer;
+  transition:
+    height 0.7s cubic-bezier(0.5, 0, 0.15, 1),
+    background 0.4s cubic-bezier(0.5, 0, 0.15, 1);
+
+  &.active {
+    background: $black;
+  }
+
+  &.open {
+    height: calc(36rem + 28vh);
+  }
+}
+
+.pill {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 36rem;
+  background: $black;
+  pointer-events: none;
+  will-change: transform, clip-path;
+  // Start fully clipped — JS toggles clip-path on enter/leave with a
+  // direction matching cursor motion.
+  clip-path: inset(0 0 100% 0);
+}
+
+.textCell {
+  flex: 0 0 36rem;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  padding: 0 8rem;
+  color: $white;
+  mix-blend-mode: difference;
+  gap: 8rem;
+}
+
+.text {
+  white-space: nowrap;
+}
+
+.year {
+  margin-left: auto;
+  padding-right: 8rem;
+  transition: opacity 0.5s cubic-bezier(0.5, 0, 0.15, 1);
+}
+
+.image {
+  flex: 0 0 28vh;
+  position: relative;
+  width: 100%;
+  overflow: hidden;
+}
+
+.carousel {
+  position: absolute;
+  inset: 0;
+  cursor: grab;
+  touch-action: pan-y;
+
+  &:active {
+    cursor: grabbing;
+  }
+}
+
+.carouselItem {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: calc(100% - 8rem);
+  overflow: hidden;
+  will-change: transform;
+  // aspect-ratio is set inline per item; width = height * aspect — gridScroll
+  // pattern (each card positioned independently for true infinite scroll).
+  background-color: black;
+  img {
+    object-fit: cover;
+  }
+}
+
+.header {
+  position: absolute;
+  top: var(--nav-height, 80rem);
+  left: 8rem;
+  right: 8rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  padding-top: 24rem;
+  z-index: 5;
+  pointer-events: none;
+
+  .meta {
+    opacity: 0.55;
+  }
+}
+
+@media (max-width: 1024px) {
+  .label {
+    height: 32rem;
+
+    &.open {
+      height: calc(32rem + 32vh);
+    }
+  }
+  .textCell {
+    flex-basis: 32rem;
+  }
+  .image {
+    flex-basis: 32vh;
+  }
+  .pill {
+    height: 32rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .label {
+    height: 28rem;
+
+    &.open {
+      height: calc(28rem + 36vh);
+    }
+  }
+  .textCell {
+    flex-basis: 28rem;
+  }
+  .image {
+    flex-basis: 36vh;
+  }
+  .pill {
+    height: 28rem;
+  }
+}

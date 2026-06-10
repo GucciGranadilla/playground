@@ -1,5 +1,6 @@
 import { useEffect, useRef, useMemo } from "react";
 import { randomHue, hslToHex } from "@/utils/randomHue";
+import { useSound } from "@/utils/soundContext";
 
 // Module-level: persist animation state across route-change remounts
 let _time = 0;
@@ -32,6 +33,8 @@ const LiquidGradientBackground = ({
   const smoothGainRef = useRef(0);
   const prevMousePosRef = useRef({ x: 0, y: 0 });
 
+  const { muted, mutedRef } = useSound();
+
   // Memoize color conversions
   const rgbColors = useMemo(() => {
     const hexToRgb = (hex: string) => {
@@ -61,6 +64,10 @@ const LiquidGradientBackground = ({
       "(prefers-reduced-motion: reduce)",
     ).matches;
 
+    const isMobile = window.matchMedia(
+      "(pointer: coarse), (max-width: 768px)",
+    ).matches;
+
     const gl = canvas.getContext("webgl", {
       antialias: false,
       alpha: false,
@@ -78,8 +85,10 @@ const LiquidGradientBackground = ({
     let width: number, height: number;
 
     const resizeCanvas = () => {
-      // Aggressive resolution scaling for performance
-      const dpr = Math.min(window.devicePixelRatio, 1.5) * 0.9;
+      // Mobile: cap pixel density much lower — fragment shader is the bottleneck
+      const dpr = isMobile
+        ? Math.min(window.devicePixelRatio, 2) * 0.5
+        : Math.min(window.devicePixelRatio, 1.5) * 0.9;
       width = window.innerWidth;
       height = window.innerHeight;
       canvas.width = Math.floor(width * dpr);
@@ -208,10 +217,13 @@ const LiquidGradientBackground = ({
         vec2 resolution = u_resolution / max(u_resolution.x, u_resolution.y);
         vec2 p = (uv - 0.5) * resolution * u_zoom;
 
-        // Add mouse influence
+        // Add mouse influence — aspect-correct the distance so the falloff
+        // stays circular in pixels (otherwise on portrait the influence
+        // region is a vertical ellipse).
         vec2 mouseInfluence = u_mouse - uv;
-        float mouseDist = length(mouseInfluence);
-        float mouseEffect = smoothstep(0.35, 0.0, mouseDist) * 0.15;
+        vec2 aspectCorrected = mouseInfluence * u_resolution / min(u_resolution.x, u_resolution.y);
+        float mouseDist = length(aspectCorrected);
+        float mouseEffect = smoothstep(0.5, 0.0, mouseDist) * 0.15;
         p += mouseInfluence * mouseEffect;
 
         vec2 warped = domainWarp(p, u_time * 0.15 + u_scroll * 0.03);
@@ -235,7 +247,10 @@ const LiquidGradientBackground = ({
         ));
         finalColor += vec3(0.15, 0.2, 0.4) * smoothstep(0.15, 0.6, gradient);
 
-        float vignette = 1.0 - smoothstep(0.4, 1.2, length(uv - 0.5));
+        // Aspect-correct vignette so the orb stays circular in pixels
+        // (otherwise on portrait the iso-contour is an ellipse stretched vertically)
+        vec2 vignettePos = (uv - 0.5) * u_resolution / min(u_resolution.x, u_resolution.y);
+        float vignette = 1.0 - smoothstep(0.5, 1.1, length(vignettePos));
         vignette = mix(0.85, 1.0, vignette);
         finalColor *= vignette;
 
@@ -366,36 +381,31 @@ const LiquidGradientBackground = ({
       prevMousePosRef.current = { x: e.clientX, y: e.clientY };
     };
 
-    const handleTouchMove = (e: TouchEvent) => {
-      if (e.touches.length > 0) {
-        mouseRef.current.targetX = e.touches[0].clientX / width;
-        mouseRef.current.targetY = 1.0 - e.touches[0].clientY / height;
-
-        initAudio();
-        audioCtxRef.current?.resume();
-        const dx = e.touches[0].clientX - prevMousePosRef.current.x;
-        const dy = e.touches[0].clientY - prevMousePosRef.current.y;
-        velocityRef.current += Math.sqrt(dx * dx + dy * dy);
-        prevMousePosRef.current = {
-          x: e.touches[0].clientX,
-          y: e.touches[0].clientY,
-        };
-      }
-    };
-
     const handleScroll = () => {
-      targetScrollRef.current = window.scrollY * 0.001;
+      // Clamp to 0 to ignore iOS rubber-band overscroll. Negative scrollY
+      // would shift the shader's domain warp visually, looking like the
+      // canvas itself is overscrolling.
+      targetScrollRef.current = Math.max(0, window.scrollY) * 0.001;
     };
 
-    // Throttle resize events
+    // Throttle resize events. On mobile, ignore height-only changes —
+    // those come from the URL bar collapsing/expanding during scroll, and
+    // reallocating the GL backing buffer mid-scroll causes parallax jank.
     let resizeTimeout: ReturnType<typeof setTimeout>;
+    let lastResizeWidth = window.innerWidth;
     const handleResize = () => {
+      if (isMobile && window.innerWidth === lastResizeWidth) return;
+      lastResizeWidth = window.innerWidth;
       clearTimeout(resizeTimeout);
       resizeTimeout = setTimeout(resizeCanvas, 150);
     };
 
-    canvas.addEventListener("mousemove", handleMouseMove);
-    canvas.addEventListener("touchmove", handleTouchMove);
+    // Listen on window instead of canvas so we can keep canvas's
+    // pointer-events: none — that stops the WebGL surface from intercepting
+    // touch events on mobile, which lets scroll behave like a normal div.
+    if (!isMobile) {
+      window.addEventListener("mousemove", handleMouseMove);
+    }
     window.addEventListener("scroll", handleScroll);
     window.addEventListener("resize", handleResize);
 
@@ -439,7 +449,9 @@ const LiquidGradientBackground = ({
       // Water audio: map accumulated velocity → gain, asymmetric lerp
       if (gainNodeRef.current) {
         const MAX_GAIN = 0.14;
-        const targetGain = Math.min(velocityRef.current / 28, 1) * MAX_GAIN;
+        const targetGain = mutedRef.current
+          ? 0
+          : Math.min(velocityRef.current / 28, 1) * MAX_GAIN;
         velocityRef.current *= 0.72; // velocity decay per frame
         const rate = targetGain > smoothGainRef.current ? 0.18 : 0.04; // fast attack, slow release
         smoothGainRef.current += (targetGain - smoothGainRef.current) * rate;
@@ -464,8 +476,7 @@ const LiquidGradientBackground = ({
       _time = timeRef.current;
       _phase = phaseRef.current;
       clearTimeout(resizeTimeout);
-      canvas.removeEventListener("mousemove", handleMouseMove);
-      canvas.removeEventListener("touchmove", handleTouchMove);
+      window.removeEventListener("mousemove", handleMouseMove);
       window.removeEventListener("scroll", handleScroll);
       window.removeEventListener("resize", handleResize);
       if (animationRef.current) {
@@ -483,10 +494,29 @@ const LiquidGradientBackground = ({
     };
   }, [colors, speed, zoom, mouseInfluence, loopDuration]);
 
+  useEffect(() => {
+    const ctx = audioCtxRef.current;
+    if (!ctx) return;
+    if (muted) {
+      smoothGainRef.current = 0;
+      velocityRef.current = 0;
+      if (gainNodeRef.current) gainNodeRef.current.gain.value = 0;
+      ctx.suspend().catch(() => {});
+    } else {
+      ctx.resume().catch(() => {});
+    }
+  }, [muted]);
+
   return (
     <canvas
       ref={canvasRef}
-      style={{ display: "block", width: "100%", height: "100%" }}
+      style={{
+        display: "block",
+        width: "100%",
+        height: "100%",
+        touchAction: "pan-y",
+        pointerEvents: "none",
+      }}
     />
   );
 };

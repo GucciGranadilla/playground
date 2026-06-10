@@ -1,5 +1,13 @@
 @use "colors" as *;
 
+// === UNITS ===
+
+// Drop-in for `Nrem` that keeps scaling past the --vw-cap.
+// ru(280) === 280rem at every breakpoint, but uncapped on 2K/4K monitors.
+@function ru($n) {
+  @return calc(#{$n} * 100vw / var(--dw));
+}
+
 // === LAYOUT MIXINS ===
 
 @mixin flex-container(

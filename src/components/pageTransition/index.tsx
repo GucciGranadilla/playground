@@ -7,6 +7,7 @@ import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useLenis } from "lenis/react";
 import s from "./transition.module.scss";
+// import useNextCssRemovalPrevention from "@/utils/useNextCssRemovalPrevention";
 
 if (typeof window !== "undefined") {
   gsap.registerPlugin(ScrollTrigger);
@@ -57,14 +58,10 @@ function PageContent({
       className={!isPresent ? s.clone : undefined}
       style={{
         width: "100%",
-        position: isPresent ? "relative" : "fixed",
+        position: isPresent ? "relative" : "absolute",
         top: 0,
         left: 0,
-        height: isPresent
-          ? isTransitioning
-            ? "100dvh"
-            : "auto"
-          : lockedHeight,
+        height: isPresent ? (isTransitioning ? "100vh" : "auto") : lockedHeight,
         zIndex: isPresent ? 1 : 10,
         overflow: isPresent && !isTransitioning ? "visible" : "clip",
       }}
@@ -93,6 +90,8 @@ export default function PageTransition({ children }: PageTransitionProps) {
   const [exitScrollY, setExitScrollY] = useState(0);
   const lenis = useLenis();
 
+  // useNextCssRemovalPrevention();
+
   const routeKey = router.asPath.split(/[?#]/)[0];
 
   useEffect(() => {
@@ -101,8 +100,14 @@ export default function PageTransition({ children }: PageTransitionProps) {
     }
 
     const handleRouteChangeStart = () => {
-      setExitScrollY(lenis ? lenis.scroll : window.scrollY);
+      // Use window.scrollY (actual visual position), not lenis.scroll —
+      // Lenis's dimensions can be stale (autoResize's ResizeObserver
+      // doesn't catch scrollHeight changes) so its `scroll` may overshoot
+      // the real maxScroll, which would offset the leaving page by the
+      // delta and cause a visible jump.
+      setExitScrollY(window.scrollY);
       document.body.classList.add("is-transitioning");
+      lenis?.resize();
       lenis?.stop();
       gsap.globalTimeline
         .getChildren(true, true, false)

@@ -1,7 +1,5 @@
-import { useCallback, useRef } from "react";
+import { useRef } from "react";
 import Link from "next/link";
-import useEmblaCarousel from "embla-carousel-react";
-import AutoScroll from "embla-carousel-auto-scroll";
 import { motion, useScroll, useTransform } from "framer-motion";
 import CapeTownTime from "@/components/capeTownTime";
 import ParallaxImage from "@/components/parallaxImage";
@@ -16,16 +14,6 @@ interface FooterProps {
 
 export default function Footer({ page }: FooterProps) {
   const rootRef = useRef<HTMLElement>(null);
-  const [emblaRef] = useEmblaCarousel(
-    { loop: true, dragFree: true, watchDrag: false },
-    [AutoScroll({ speed: 1.4, stopOnInteraction: false })],
-  );
-  const logoMergedRef = useCallback(
-    (node: HTMLDivElement | null) => {
-      emblaRef(node);
-    },
-    [emblaRef],
-  );
 
   const { scrollYProgress } = useScroll({
     target: rootRef,
@@ -35,28 +23,22 @@ export default function Footer({ page }: FooterProps) {
   const clipPath = useTransform(
     scrollYProgress,
     [0, 1],
-    ["inset(14% 14% 0 14%)", "inset(0% 0% 0 0%)"],
+    ["inset(10% 10% 0 10%)", "inset(0% 0% 0 0%)"],
   );
 
   const y = useTransform(scrollYProgress, [0.5, 1], ["50vh", "0vh"]);
 
   const items = {
     logo: "kevin:davis",
-    image: {
-      src: "/images/footer.jpg",
-    },
-    contact: {
-      text: "The work, the process, the thinking",
-      link: {
-        label: "Follow",
-        href: "mailto:kevidavis911@gmail.com",
-      },
-    },
-    copyright: "© 2025. All Rights Reserved",
-    links: [
-      { label: "Work", href: "/work" },
-      { label: "About", href: "/about" },
-      { label: "Contact", href: "mailto:kevidavis911@gmail.com" },
+    image: { src: "/images/snow.png" },
+    email: "kevidavis911@gmail.com",
+    studio: { city: "Cape Town, ZA" },
+    copyright: `© ${new Date().getFullYear()}`,
+    menu: [
+      { label: "Index", href: "/work" },
+      // { label: "Exploration", href: "/explorations" },
+      { label: "Studio", href: "/about" },
+      { label: "Contact", href: "/contact-preview" },
     ],
   };
 
@@ -66,24 +48,48 @@ export default function Footer({ page }: FooterProps) {
         <ParallaxImage
           src={items.image.src}
           alt=""
-          sizes="100vw"
+          sizes="(min-width: 481px) 120vw, 384vw"
           className={s.image}
         />
       </motion.div>
-      <motion.div className={s.logoWrapper} style={{ y }}>
+
+      <motion.div className={s.card} style={{ y }}>
         <div className={s.glassFilter} />
         <div className={s.glassOverlay} />
         <div className={s.glassSpecular} />
-        <div className={s.logo} ref={logoMergedRef}>
-          <div className={s.logoTrack}>
-            {[0, 1, 2].map((i) => (
-              <div key={i} className={c(s.logoItem, t.xxl)}>
-                {items.logo}
-              </div>
-            ))}
+
+        <div className={s.cardInner}>
+          <Link href="/" className={c(s.logoMark, t.logo)}>
+            {items.logo}
+          </Link>
+
+          <div className={s.menuBlock}>
+            <ul className={s.menuList}>
+              {items.menu.map(({ label, href }, i) => (
+                <li key={i}>
+                  <Link href={href} className={c(s.primaryLink, t.l)}>
+                    {label}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          <div className={s.elsewhereBlock}>
+            <ul className={s.elsewhereList}>
+              {/* <li className={c(s.secondaryItem, t.cta)}>{items.studio.city}</li> */}
+              <li>
+                <CapeTownTime
+                  className={c(s.secondaryItem, t.cta)}
+                  showStatus
+                />
+              </li>
+            </ul>
+            <p className={c(s.copyright, t.cta)}>{items.copyright}</p>
           </div>
         </div>
       </motion.div>
+
       <svg style={{ display: "none" }}>
         <filter id="lg-dist" x="-3%" y="-3%" width="106%" height="106%">
           <feTurbulence
@@ -94,7 +100,6 @@ export default function Footer({ page }: FooterProps) {
             result="noise"
           />
           <feGaussianBlur in="noise" stdDeviation={5} result="blurred" />
-          {/* Single displacement pass */}
           <feDisplacementMap
             in="SourceGraphic"
             in2="blurred"
@@ -103,7 +108,6 @@ export default function Footer({ page }: FooterProps) {
             yChannelSelector="G"
             result="displaced"
           />
-          {/* Cheap feOffset chromatic split from the already-displaced result */}
           <feColorMatrix
             type="matrix"
             values="1 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 1 0"
@@ -128,33 +132,6 @@ export default function Footer({ page }: FooterProps) {
           <feBlend in="rg" in2="shiftedB" mode="screen" />
         </filter>
       </svg>
-      <motion.div className={s.logoBorder} style={{ y }} />
-      <motion.div className={s.content} style={{ y }}>
-        <div className={s.inner}>
-          <div className={s.middle}>
-            <ul>
-              {items.links.map((link, i) => (
-                <li key={i}>
-                  <Link href={link.href} className={c(s.link, t.cta)}>
-                    {link.label}
-                    {i < items.links.length - 1 ? "," : ""}
-                  </Link>
-                </li>
-              ))}
-            </ul>
-            {/* <div className={s.newsletter}>
-              <p className={t.p}>{items.contact.text}</p>
-              <a href={items.contact.link.href} className={c(s.link, t.cta)}>
-                {items.contact.link.label}
-              </a>
-            </div> */}
-          </div>
-          <div className={s.bottom}>
-            <p className={c(s.copyright, t.cta)}>{items.copyright}</p>
-            <CapeTownTime className={c(s.time, t.cta)} showStatus />
-          </div>
-        </div>
-      </motion.div>
     </footer>
   );
 }

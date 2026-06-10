@@ -1,31 +1,33 @@
 @use "styles/colors" as *;
+@use "styles/mixins" as *;
 
 .root {
-  display: grid;
-  grid-template-columns: repeat(8, 1fr);
-  color: #171717;
-  gap: 8rem;
-  padding: 60rem 8rem 120rem;
-}
-.imageWrap {
-  grid-column: 1/3;
-  grid-row: 1/3;
-  position: relative;
-  height: 520rem;
-}
-.body {
-  grid-column: 5/-1;
-  margin-bottom: 280rem;
-  padding-right: 20rem;
-}
-.content {
-  grid-column: 6/8;
   display: flex;
   flex-direction: column;
-  row-gap: 20rem;
+  color: #171717;
+  padding: 60rem 8rem 80rem;
+}
+
+.imageWrap {
+  position: relative;
+  aspect-ratio: 20/27;
+  width: 50%;
+  order: 2;
+  margin: 80rem 0 0 auto;
+}
+
+.body {
+  margin-bottom: 60rem;
+}
+
+.content {
+  align-self: flex-end;
+  display: flex;
+  flex-direction: column;
+  row-gap: 16rem;
 
   h2 {
-    padding-bottom: 20rem;
+    padding-bottom: 16rem;
     border-bottom: 1px dashed $lgrey;
   }
 
@@ -41,5 +43,37 @@
     align-items: center;
     justify-content: center;
     text-align: center;
+  }
+}
+
+@media screen and (min-width: 481px) {
+  .root {
+    display: grid;
+    grid-template-columns: repeat(8, 1fr);
+    gap: 8rem;
+    padding: 60rem 8rem 120rem;
+  }
+  .imageWrap {
+    aspect-ratio: 35/52;
+    margin: 0;
+    grid-column: 1/3;
+    grid-row: 1/3;
+    width: auto;
+    margin-bottom: 0;
+  }
+  .body {
+    grid-column: 5/-1;
+    margin-bottom: ru(280);
+    padding-right: 20rem;
+  }
+  .content {
+    grid-column: 6/8;
+    width: auto;
+    align-self: auto;
+    row-gap: 20rem;
+
+    h2 {
+      padding-bottom: 20rem;
+    }
   }
 }

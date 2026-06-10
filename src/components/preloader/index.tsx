@@ -9,6 +9,7 @@ import { useMotionValue, useSpring, useMotionValueEvent } from "framer-motion";
 import { useLenis } from "lenis/react";
 import gsap from "gsap";
 import { randomHue } from "@/utils/randomHue";
+import { useSound } from "@/utils/soundContext";
 import c from "@/utils/classNames";
 import s from "./preloader.module.scss";
 import g from "@/styles/global.module.scss";
@@ -47,9 +48,27 @@ function usePageProgress(onComplete: () => void) {
   });
 
   useEffect(() => {
+    let completed = false;
+
+    const tryComplete = () => {
+      if (completed) return;
+      completed = true;
+      progress.set(1);
+    };
+
     const applyMilestone = () => {
       const ceil = MILESTONES[document.readyState];
       if (ceil !== undefined && ceil > progress.get()) progress.set(ceil);
+
+      // On non-canvas pages, `complete` is the strongest signal we have
+      // (all <img>/<script>/<link> resources resolved). Don't make those
+      // pages wait for the 5s fallback — finish as soon as we hit it.
+      if (
+        document.readyState === "complete" &&
+        !document.querySelector("canvas")
+      ) {
+        tryComplete();
+      }
     };
 
     applyMilestone();
@@ -65,24 +84,6 @@ function usePageProgress(onComplete: () => void) {
         progress.set(Math.min(current + (ceil - current) * 0.08 + 0.004, ceil));
       }
     }, 80);
-
-    // Minimum display time so the image sequence has meaningful visual time
-    const startTime = Date.now();
-    const MIN_DISPLAY_MS = 2200;
-    let minDisplayTimer: ReturnType<typeof setTimeout> | null = null;
-    let completed = false;
-
-    const tryComplete = () => {
-      if (completed) return;
-      completed = true;
-      const elapsed = Date.now() - startTime;
-      const remaining = MIN_DISPLAY_MS - elapsed;
-      if (remaining <= 0) {
-        progress.set(1);
-      } else {
-        minDisplayTimer = setTimeout(() => progress.set(1), remaining);
-      }
-    };
 
     const onCanvasReady = () => {
       canvasReady.current = true;
@@ -101,7 +102,6 @@ function usePageProgress(onComplete: () => void) {
       clearInterval(fill);
       window.removeEventListener("canvas-ready", onCanvasReady);
       clearTimeout(fallback);
-      if (minDisplayTimer !== null) clearTimeout(minDisplayTimer);
     };
   }, []);
 
@@ -117,6 +117,7 @@ function usePageProgress(onComplete: () => void) {
 }
 
 export default function Preloader({ disabled }: { disabled?: boolean }) {
+  const { mutedRef } = useSound();
   const ref = useRef<HTMLDivElement>(null);
   const lenis = useLenis();
   const [load, setLoad] = useState(false);
@@ -273,19 +274,16 @@ export default function Preloader({ disabled }: { disabled?: boolean }) {
           { clipPath: "inset(0% 0% 0% 0%)", duration: 0.45, ease: "ioC2" },
           "<-0.15",
         )
+        // Auto-advance: skip the click-to-enter gate, signal page ready instead.
+        // .call(() => { setShowEnter(true); }, undefined, "<0.2")
+        // .call(() => { tl.pause(); }, undefined, ">0.2")
         .call(
           () => {
-            setShowEnter(true);
+            document.documentElement.classList.add(a.ready);
           },
           undefined,
-          "<0.2",
-        )
-        .call(
-          () => {
-            tl.pause();
-          },
-          undefined,
-          ">0.2",
+          // "<0.2",
+          ">",
         )
         .to(
           imgs[3],
@@ -331,9 +329,11 @@ export default function Preloader({ disabled }: { disabled?: boolean }) {
 
   const handleEnter = () => {
     lenis?.start();
-    const dubAudio = new Audio("/effects/dub.mp3");
-    dubAudio.volume = 0.25;
-    dubAudio.play().catch(() => {});
+    if (!mutedRef.current) {
+      const dubAudio = new Audio("/effects/dub.mp3");
+      dubAudio.volume = 0.25;
+      dubAudio.play().catch(() => {});
+    }
     document.documentElement.classList.add(a.ready);
     if (enterTextRef.current) {
       gsap.to(enterTextRef.current, {
@@ -362,27 +362,27 @@ export default function Preloader({ disabled }: { disabled?: boolean }) {
         <div className={s.bgPanel}></div>
       </div>
       <div className={c(s.container, g.padding)}>
-        <div className={c(s.loading, t.tag)}>
+        <div className={c(s.loading, t.cta)}>
           <div className={s.progressContainer}>
             <div className={s.progressText}>
-              <div className={t.tag} ref={percentageRef} id="pre-percentage">
+              <div className={t.cta} ref={percentageRef} id="pre-percentage">
                 00 %
               </div>
             </div>
           </div>
           <div className={s.nameContainer}>
             <div
-              className={c(s.nameText, t.tag)}
+              className={c(s.nameText, t.cta)}
               id="pre-kevin"
               style={{ transform: "translateX(0)" }}
             >
               kevin
             </div>
-            <div className={c(s.nameText, t.tag)} id="pre-colon">
+            <div className={c(s.nameText, t.cta)} id="pre-colon">
               :
             </div>
             <div
-              className={c(s.nameText, t.tag)}
+              className={c(s.nameText, t.cta)}
               id="pre-davis"
               style={{ transform: "translateX(0)" }}
             >

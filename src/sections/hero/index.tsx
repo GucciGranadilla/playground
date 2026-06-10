@@ -1,8 +1,7 @@
 "use client";
 
-import { useRef, useEffect } from "react";
-import gsap from "gsap";
-import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { useRef } from "react";
+import { motion, useScroll, useTransform } from "framer-motion";
 import { useLenis } from "lenis/react";
 import Canvas from "./canvas";
 import SplitText from "@/components/splitText";
@@ -11,55 +10,46 @@ import s from "./hero.module.scss";
 import t from "@/styles/text.module.scss";
 import a from "@/styles/ani.module.scss";
 import c from "@/utils/classNames";
+import useMobile from "@/utils/useMobile";
 
-if (typeof window !== "undefined") {
-  gsap.registerPlugin(ScrollTrigger);
+interface HeroData {
+  tag?: string;
+  title?: string;
+  version?: string;
+  scrollLabel?: string;
 }
 
 interface HeroProps {
   page?: string;
+  hero?: HeroData;
 }
 
-export default function Hero({ page }: HeroProps) {
+export default function Hero({ hero }: HeroProps) {
   const containerRef = useRef<HTMLDivElement>(null);
-  const innerRef = useRef<HTMLDivElement>(null);
   const lenis = useLenis();
+  const isMobile = useMobile();
+
+  const { scrollYProgress } = useScroll({
+    target: containerRef,
+    offset: ["start start", "end start"],
+  });
+  const innerY = useTransform(scrollYProgress, [0, 1], ["0%", "20%"]);
 
   const item = {
     title:
+      hero?.title ||
       "A bespoke digital studio where brand identity design and engineering become one",
-    tag: "Digital studio",
-    scrollLabel: "Scroll Down",
+    tag: hero?.tag || "Digital studio",
+    version: hero?.version || "v0.0.1 alpha",
+    scrollLabel: hero?.scrollLabel || "Scroll Down",
   };
-
-  useEffect(() => {
-    const container = containerRef.current;
-    const inner = innerRef.current;
-    if (!container || !inner) return;
-
-    const tween = gsap.fromTo(
-      inner,
-      { y: "0%" },
-      {
-        y: "20%",
-        ease: "none",
-        scrollTrigger: {
-          trigger: container,
-          start: "top top",
-          end: "bottom top",
-          scrub: true,
-        },
-      },
-    );
-
-    return () => {
-      tween.scrollTrigger?.kill();
-    };
-  }, []);
 
   return (
     <section className={s.root} ref={containerRef} data-hero>
-      <div className={s.inner} ref={innerRef}>
+      <motion.div
+        className={s.inner}
+        style={isMobile ? undefined : { y: innerY }}
+      >
         <div className={s.content}>
           <div className={s.center}>
             <div className={c(s.tag, t.tag)} style={{ overflow: "clip" }}>
@@ -88,13 +78,21 @@ export default function Hero({ page }: HeroProps) {
                 <CapeTownTime className={c(s.time, t.cta)} showStatus />
               </div>
             </div>
-            <div style={{ overflow: "clip" }}>
+            <div className={c(s.version, t.cta)} style={{ overflow: "clip" }}>
+              <div
+                className={a.moveUp}
+                style={{ "--delay": "0.52s" } as React.CSSProperties}
+              >
+                {item.version}
+              </div>
+            </div>
+            <div className={s.scrollLabel}>
               <div
                 className={a.moveUp}
                 style={{ "--delay": "0.86s" } as React.CSSProperties}
               >
                 <span
-                  className={c(s.scrollLabel, t.cta)}
+                  className={t.cta}
                   style={{ cursor: "pointer" }}
                   onClick={() => {
                     lenis?.scrollTo(
@@ -117,7 +115,7 @@ export default function Hero({ page }: HeroProps) {
             <Canvas />
           </div>
         </div>
-      </div>
+      </motion.div>
     </section>
   );
 }

@@ -1,0 +1,213 @@
+@use "styles/resets";
+
+@use "styles/colors" as *;
+@use "styles/eases" as *;
+
+@font-face {
+  font-family: "Geist";
+  src: url("/fonts/Geist.woff2") format("woff2");
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Exposure";
+  src: url("/fonts/ExposureTrialVAR.ttf") format("truetype-variations");
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Questrial";
+  src: url("/fonts/Questrial-latin-ext.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+  unicode-range:
+    U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304,
+    U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB,
+    U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+
+@font-face {
+  font-family: "Questrial";
+  src: url("/fonts/Questrial-latin.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+  unicode-range:
+    U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC,
+    U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212,
+    U+2215, U+FEFF, U+FFFD;
+}
+
+:root {
+  --dw: 390;
+  --vw-cap: 100vw;
+}
+
+html {
+  font-size: calc(min(100vw, var(--vw-cap)) / var(--dw));
+
+  &::selection {
+    background: var(--accent);
+    color: $black;
+  }
+}
+
+body {
+  font-family:
+    "Geist",
+    -apple-system,
+    BlinkMacSystemFont,
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  font-size-adjust: 0.52;
+  font-size: 16rem;
+  line-height: 1;
+  font-weight: 400;
+  overscroll-behavior: none;
+  background: $white;
+  color: $black;
+}
+
+section:last-child {
+  margin-bottom: 0;
+}
+
+a:focus-visible,
+button:focus-visible {
+  outline: 1rem solid $black;
+  outline-offset: 1rem;
+}
+
+strong {
+  font-weight: 500;
+}
+
+/* Lenis */
+
+.lenis {
+  height: auto;
+  overflow-y: auto;
+}
+
+.lenis.lenis-smooth {
+  scroll-behavior: auto;
+}
+
+.lenis.lenis-smooth [data-lenis-prevent] {
+  overscroll-behavior: contain;
+}
+
+.lenis.lenis-stopped {
+  overflow: hidden;
+}
+
+.lenis.lenis-scrolling iframe {
+  pointer-events: none;
+}
+
+/* Next.js */
+
+nextjs-portal {
+  --size-1: 1rem !important;
+  --size-2: 2rem !important;
+  --size-3: 3rem !important;
+  --size-4: 4rem !important;
+  --size-5: 5rem !important;
+  --size-6: 6rem !important;
+  --size-7: 7rem !important;
+  --size-8: 8rem !important;
+  --size-9: 9rem !important;
+  --size-10: 10rem !important;
+  --size-11: 11rem !important;
+  --size-12: 12rem !important;
+  --size-13: 13rem !important;
+  --size-14: 14rem !important;
+  --size-15: 15rem !important;
+  --size-16: 16rem !important;
+  --size-17: 17rem !important;
+  --size-18: 18rem !important;
+  --size-20: 20rem !important;
+  --size-22: 22rem !important;
+  --size-24: 24rem !important;
+  --size-26: 26rem !important;
+  --size-28: 28rem !important;
+  --size-30: 30rem !important;
+  --size-32: 32rem !important;
+  --size-34: 34rem !important;
+  --size-36: 36rem !important;
+  --size-38: 38rem !important;
+  --size-40: 40rem !important;
+  --size-42: 42rem !important;
+  --size-44: 44rem !important;
+  --size-46: 46rem !important;
+  --size-48: 48rem !important;
+}
+
+// SplitText
+
+.split {
+  position: relative;
+  // Prevent layout shift during text splitting
+  min-height: 1em;
+}
+
+// .line {
+// 	position: relative;
+// 	display: block;
+// }
+
+// .word {
+// 	position: relative;
+// 	display: inline-block;
+// 	white-space: pre;
+// }
+
+// .char {
+// 	position: relative;
+// 	display: inline-block;
+
+// 	&.empty {
+// 		display: none;
+// 	}
+// }
+
+.split > .wrap {
+  position: relative;
+  // overflow: hidden;
+  // width: 100%;
+  padding-bottom: 2rem;
+  // margin-bottom: -6rem;
+}
+
+// .line > .wrap {
+// 	position: relative;
+// 	display: inline;
+// 	overflow: hidden;
+// }
+
+/* Tablet */
+@media screen and (min-width: 481px) {
+  :root {
+    --dw: 768;
+  }
+}
+
+/* Desktop */
+@media screen and (min-width: 1025px) {
+  :root {
+    --dw: 1440;
+    --vw-cap: 1920px;
+  }
+}
+
+@media print {
+  :root {
+    --dw: 660;
+  }
+}

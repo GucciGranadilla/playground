@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import { motion, useScroll, useTransform } from "framer-motion";
 import { imagePlaceholders } from "@/utils/imagePlaceholders";
@@ -30,7 +30,7 @@ export default function ParallaxImage({
   src,
   alt,
   sizes,
-  quality = 75,
+  quality = 80,
   priority,
   className,
   parallax = true,
@@ -62,6 +62,8 @@ export default function ParallaxImage({
         width: "100%",
         height: "100%",
         overflow: "hidden",
+        willChange: "transform",
+        transform: "translateZ(0)",
       }}
     >
       <motion.div

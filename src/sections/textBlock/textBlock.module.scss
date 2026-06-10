@@ -1,10 +1,15 @@
 @use "styles/colors" as *;
 
 .root {
-  padding: 60rem 8rem;
-  // text-indent: 180rem;
+  padding: 20rem 8rem;
 }
+@media screen and (min-width: 481px) {
+  .root {
+    padding: 60rem 8rem;
+    // text-indent: 180rem;
+  }
 
-.body {
-  grid-column: 1/6;
+  .body {
+    grid-column: 1/6;
+  }
 }

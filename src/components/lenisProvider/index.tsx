@@ -56,9 +56,11 @@ export default function LenisProvider({ children }: LenisProviderProps) {
       options={{
         duration: 1.4,
         easing: (t: number) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
-        smoothWheel: true,
-        autoResize: true,
+        wheelMultiplier: 0.9,
+        orientation: "vertical",
+        gestureOrientation: "vertical",
         autoRaf: false,
+        anchors: true,
       }}
     >
       <LenisGSAPSync />

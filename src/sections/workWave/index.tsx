@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useEffect } from "react";
+import { useRef, useEffect, useState } from "react";
 import Image from "next/image";
 import Router from "next/router";
 import Link from "next/link";
@@ -10,9 +10,11 @@ import s from "./workWave.module.scss";
 import t from "@/styles/text.module.scss";
 import c from "@/utils/classNames";
 import { createAudioChain } from "@/utils/createAudioChain";
+import { useSound } from "@/utils/soundContext";
 import { randomHue } from "@/utils/randomHue";
 import { imagePlaceholders } from "@/utils/imagePlaceholders";
 import { WORK_ITEMS } from "@/data/workItems";
+import useMobile from "@/utils/useMobile";
 
 const LEFT_ITEMS = WORK_ITEMS.map((item) => ({
   link: `work/${item.slug}`,
@@ -30,11 +32,16 @@ const HALF = LEFT_ITEMS.length;
 
 export default function WorkWave() {
   const lenis = useLenis();
+  const { mutedRef } = useSound();
+  const isMobile = useMobile();
   const wrapperRef = useRef<HTMLDivElement>(null);
   const leftColRef = useRef<HTMLDivElement>(null);
   const rightColRef = useRef<HTMLDivElement>(null);
+  const thumbnailWrapperRef = useRef<HTMLDivElement>(null);
+  const [activeIndex, setActiveIndex] = useState(0);
 
   useEffect(() => {
+    if (isMobile === undefined) return;
     const wrapper = wrapperRef.current;
     const leftCol = leftColRef.current;
     const rightCol = rightColRef.current;
@@ -59,6 +66,7 @@ export default function WorkWave() {
 
     const playClick = () => {
       if (!clickBuffer) return;
+      if (mutedRef.current) return;
       audioCtx
         .resume()
         .then(() => {
@@ -77,7 +85,9 @@ export default function WorkWave() {
       rightCol.querySelectorAll<HTMLElement>(`.${s.item}`),
     );
     const thumbSlots = Array.from(
-      wrapper.querySelectorAll<HTMLElement>(`.${s.thumbSlot}`),
+      (thumbnailWrapperRef.current ?? wrapper).querySelectorAll<HTMLElement>(
+        `.${s.thumbSlot}`,
+      ),
     );
     const bgSlots = Array.from(
       wrapper.querySelectorAll<HTMLElement>(`.${s.bgSlot}`),
@@ -87,9 +97,9 @@ export default function WorkWave() {
     let activeSlot = 0;
     let lastFocused = -1;
 
-    // All slots inert by default, activate first
-    gsap.set(thumbSlots, { opacity: 0, pointerEvents: "none" });
-    gsap.set(thumbSlots[0], { opacity: 1, pointerEvents: "auto" });
+    // All slots hidden by default, show first
+    gsap.set(thumbSlots, { opacity: 0 });
+    gsap.set(thumbSlots[0], { opacity: 1 });
     gsap.set(bgSlots[0], { opacity: 1 });
 
     const measureOneSetHeight = () => {
@@ -118,11 +128,12 @@ export default function WorkWave() {
     const updateThumbnail = (focused: number) => {
       const newIndex = focused % HALF;
       if (newIndex === activeSlot) return;
-      gsap.set(thumbSlots[activeSlot], { opacity: 0, pointerEvents: "none" });
+      gsap.set(thumbSlots[activeSlot], { opacity: 0 });
       gsap.set(bgSlots[activeSlot], { opacity: 0 });
-      gsap.set(thumbSlots[newIndex], { opacity: 1, pointerEvents: "auto" });
+      gsap.set(thumbSlots[newIndex], { opacity: 1 });
       gsap.set(bgSlots[newIndex], { opacity: 1 });
       activeSlot = newIndex;
+      setActiveIndex(newIndex);
     };
 
     const handleScroll = ({ scroll }: { scroll: number }) => {
@@ -158,9 +169,41 @@ export default function WorkWave() {
       targetScroll += e.deltaY;
     };
 
+    let lastTouchY = 0;
+    let lastTouchTime = 0;
+    let touchVelocity = 0;
+    let touchActive = false;
+
+    const onTouchStart = (e: TouchEvent) => {
+      lastTouchY = e.touches[0].clientY;
+      lastTouchTime = performance.now();
+      touchVelocity = 0;
+      touchActive = true;
+    };
+    const onTouchMove = (e: TouchEvent) => {
+      if (e.touches.length !== 1) return;
+      e.preventDefault();
+      const y = e.touches[0].clientY;
+      const now = performance.now();
+      const dt = Math.max(now - lastTouchTime, 1);
+      const delta = lastTouchY - y;
+      touchVelocity = (delta / dt) * 16;
+      targetScroll += delta;
+      lastTouchY = y;
+      lastTouchTime = now;
+    };
+    const onTouchEnd = () => {
+      touchActive = false;
+    };
+
     let rafId: number;
     const rafLoop = () => {
-      currentScroll += (targetScroll - currentScroll) * 0.1;
+      if (!touchActive && Math.abs(touchVelocity) > 0.1) {
+        targetScroll += touchVelocity;
+        touchVelocity *= 0.94;
+      }
+      const lerp = touchActive ? 0.35 : 0.1;
+      currentScroll += (targetScroll - currentScroll) * lerp;
       handleScroll({ scroll: currentScroll });
       rafId = requestAnimationFrame(rafLoop);
     };
@@ -174,6 +217,9 @@ export default function WorkWave() {
       oneSetHeight = measureOneSetHeight();
       handleScroll({ scroll: 0 });
       window.addEventListener("wheel", onWheel, { passive: false });
+      window.addEventListener("touchstart", onTouchStart, { passive: true });
+      window.addEventListener("touchmove", onTouchMove, { passive: false });
+      window.addEventListener("touchend", onTouchEnd, { passive: true });
       window.addEventListener("resize", onResize);
       rafId = requestAnimationFrame(rafLoop);
     };
@@ -187,6 +233,9 @@ export default function WorkWave() {
       clearTimeout(initTimer);
       cancelAnimationFrame(rafId);
       window.removeEventListener("wheel", onWheel);
+      window.removeEventListener("touchstart", onTouchStart);
+      window.removeEventListener("touchmove", onTouchMove);
+      window.removeEventListener("touchend", onTouchEnd);
       window.removeEventListener("resize", onResize);
       audioCtx.close();
     };
@@ -196,12 +245,23 @@ export default function WorkWave() {
     return () => {
       Router.events.off("routeChangeStart", teardown);
       teardown();
+      lenis?.start();
     };
-  }, []);
+  }, [isMobile, lenis]);
+
+  if (isMobile === undefined) {
+    return <section className={s.root} />;
+  }
 
   return (
     <section className={s.root}>
-      <div ref={wrapperRef} className={s.wrapper}>
+      <Link
+        href={`/${LEFT_ITEMS[activeIndex].link}`}
+        className={s.linkWrap}
+        aria-label={`View ${LEFT_ITEMS[activeIndex].text}`}
+        data-mute-hover
+      >
+        <div ref={wrapperRef} className={s.wrapper}>
         <div ref={leftColRef} className={s.columnLeft}>
           {LEFT.map((item, i) => (
             <div
@@ -214,9 +274,9 @@ export default function WorkWave() {
           ))}
         </div>
 
-        <div className={s.thumbnailWrapper}>
+        <div ref={thumbnailWrapperRef} className={s.thumbnailWrapper}>
           {LEFT_ITEMS.map((item, i) => (
-            <Link href={item?.link} key={i} className={s.thumbSlot}>
+            <div key={i} className={s.thumbSlot}>
               <Image
                 src={item.cardImage.src}
                 fill
@@ -228,7 +288,7 @@ export default function WorkWave() {
                 blurDataURL={imagePlaceholders[item.cardImage.src]}
                 alt=""
               />
-            </Link>
+            </div>
           ))}
         </div>
 
@@ -257,7 +317,8 @@ export default function WorkWave() {
             </div>
           ))}
         </div>
-      </div>
+        </div>
+      </Link>
     </section>
   );
 }
