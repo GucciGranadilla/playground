@@ -4,6 +4,38 @@
 @use "styles/eases" as *;
 
 @font-face {
+  font-family: "Satoshi";
+  src: url("/fonts/Satoshi-Variable.woff2") format("woff2");
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Erode";
+  src: url("/fonts/Erode-Variable.woff2") format("woff2");
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Recia";
+  src: url("/fonts/Recia-Variable.woff2") format("woff2");
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Zodiak";
+  src: url("/fonts/Zodiak-Bold.woff2") format("woff2");
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
   font-family: "Geist";
   src: url("/fonts/Geist.woff2") format("woff2");
   font-weight: 100 900;
@@ -15,6 +47,14 @@
   font-family: "Exposure";
   src: url("/fonts/ExposureTrialVAR.ttf") format("truetype-variations");
   font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Pinokio";
+  src: url("/fonts/PinokioSansTrial-Medium.otf") format("opentype");
+  font-weight: 500;
   font-style: normal;
   font-display: swap;
 }

@@ -2,8 +2,8 @@
 .xl,
 .l {
   line-height: 100%;
-  font-weight: 400;
-  font-family: "Questrial", sans-serif;
+  font-weight: 500;
+  font-family: "Satoshi", sans-serif;
 }
 
 .p,
@@ -18,13 +18,14 @@
 .xl,
 .l,
 .tag {
-  font-family: "Questrial", "Questrial", sans-serif;
-  font-weight: 600;
+  font-family: "Satoshi", "Questrial", sans-serif;
+  // Satoshi ships as two static cuts: 400 (Regular) and 700 (Bold).
+  font-weight: 540;
 }
 
 .xl,
 .l {
-  letter-spacing: 0em;
+  letter-spacing: -0.02em;
 }
 
 .tag
@@ -68,7 +69,7 @@
   font-size: 20rem;
   line-height: 20rem;
   letter-spacing: -0.02em;
-  font-family: "Questrial", sans-serif;
+  font-family: "Satoshi", sans-serif;
 }
 
 .red {
@@ -85,8 +86,8 @@
 
 @media screen and (min-width: 481px) {
   .xl {
-    font-size: 42rem;
-    line-height: 46rem;
+    font-size: 40rem;
+    line-height: 44rem;
   }
   .l {
     font-size: 30rem;
