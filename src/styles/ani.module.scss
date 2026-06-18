@@ -103,6 +103,25 @@
 }
 
 /* Fade Up 50% — scroll triggered */
+.fadeUp20Scroll {
+  opacity: 0;
+  transform: translate3d(0, 20rem, 0);
+  transition:
+    transform 1s cubic-bezier(0.2, 0.6, 0.1, 1),
+    opacity 1s linear;
+}
+.inView .fadeUp20Scroll {
+  opacity: 1;
+  transform: translate3d(0, 0, 0);
+  transition-delay: var(--delay);
+}
+.disabled .fadeUp20Scroll {
+  opacity: 1;
+  transform: translate3d(0, 0, 0);
+  transition: none;
+}
+
+/* Fade Up 50% — scroll triggered */
 .fadeUp50Scroll {
   opacity: 0;
   transform: translate3d(0, 50rem, 0);

@@ -190,6 +190,7 @@
   clip-path: inset(100% 100% 100% 100%); // Initial clipped state
   will-change: clip-path;
   z-index: 2; // Higher than text (1) and bg (0)
+
   img {
     @include full-size;
     object-fit: cover;

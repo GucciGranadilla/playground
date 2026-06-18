@@ -17,10 +17,10 @@ import t from "@/styles/text.module.scss";
 import a from "@/styles/ani.module.scss";
 
 const IMAGES = [
-  { src: "/images/preloader/gsp.jpg" },
-  { src: "/images/preloader/higherlife.jpg" },
-  { src: "/images/preloader/paragon.jpg" },
-  { src: "/images/preloader/gsp.jpg" },
+  { src: "/images/higherlife-cover.jpg" },
+  { src: "/images/healthywealth.webp" },
+  { src: "/images/gsp-cover.webp" },
+  { src: "/images/freshman.webp" },
 ];
 
 // Real readyState milestones — same signals the original DocumentMonitor tracked
