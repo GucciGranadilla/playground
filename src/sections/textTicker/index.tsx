@@ -234,11 +234,11 @@ export default function TextTicker({ page }: TextTickerProps) {
           </Link>
         </motion.div>
       </div>
-      <div className={s.blocks}>
-        <div
-          className={c(s.imageWrap)}
-          style={{ "--delay": "0.575s" } as React.CSSProperties}
-        >
+      <div
+        className={c(s.blocks, a.fadeUp50Scroll)}
+        style={{ "--delay": "0.775s" } as React.CSSProperties}
+      >
+        <div className={c(s.imageWrap)}>
           <ParallaxImage
             src={items.image.src}
             alt={items.image.name}

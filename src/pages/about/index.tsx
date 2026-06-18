@@ -19,11 +19,11 @@ import ParallaxImage from "@/components/parallaxImage";
 import s from "./about.module.scss";
 import t from "@/styles/text.module.scss";
 import c from "@/utils/classNames";
-import a from "@/styles/ani.module.scss";
-import TextBlock from "@/sections/textBlock";
 
-const STUDIO_STATEMENT =
-  "Kevin Davis Studio is a brand identity and web design practice in Cape Town, creating bespoke identity systems and digital experiences. Working at the intersection of strategy and craft, with a focus on identities that survive past the launch.";
+const STATEMENT_LEAD =
+  "kevin:davis® is a brand identity and web design practice in Cape Town, creating bespoke identity systems and digital experiences. Working at the intersection of strategy and craft,";
+const STATEMENT_EMPHASIS =
+  "with a focus on identities that survive past the launch.";
 const ABOUT_TEXT = [
   "Led by the dynamic and well-connected Gavin Schneider, known for his charismatic energy and unparalleled ability to secure the best locations, talent, and rates, our team brings extensive industry knowledge and a steadfast commitment to each project.",
   "Our dedicated production team manages every aspect of the process, from initial concept to final execution, ensuring a seamless and world-class experience.",
@@ -191,11 +191,27 @@ export default function About() {
         <title>About — Kevin Davis Studio</title>
       </Head>
       <main data-nav-bg>
-        {/* ── Statement + sidebar ─────────────────────────────────── */}
+        {/* ── Big-type editorial intro ─────────────────────────────── */}
         <section ref={sectionRef} className={s.intro}>
-          <div className={s.statementWrap}>
-            <h1 className={c(s.statement, t.xl)}>{STUDIO_STATEMENT}</h1>
-          </div>
+          <header className={c(s.metaBar, t.cta)}>
+            <span className={s.metaItem}>Kevin Davis Studio®</span>
+            <span className={s.metaItem}>Cape Town, ZA — 33°S</span>
+            <CapeTownTime className={s.metaItem} showStatus />
+            <span className={s.metaItem}>Available for Commissions</span>
+            <span className={s.metaItem}>Studio / 01</span>
+          </header>
+
+          <h1 className={s.wordmark} aria-label="Kevin Davis Studio">
+            <span>Kevin Davis</span>
+            <span>
+              Studio<sup className={s.reg}>®</sup>
+            </span>
+          </h1>
+
+          <p className={c(s.lead, t.xl)}>
+            {STATEMENT_LEAD}{" "}
+            <span className={s.leadEm}>{STATEMENT_EMPHASIS}</span>
+          </p>
 
           <div className={c(s.content)} ref={contentWrapperRef}>
             <motion.div
@@ -212,7 +228,7 @@ export default function About() {
                     } as React.CSSProperties
                   }
                 >
-                  About
+                  Profile
                 </span>
               </h2>
               <div className={s.indicators}>
@@ -309,17 +325,6 @@ export default function About() {
               />
             </div>
           </div>
-
-          {/* <header className={c(s.metaBar, t.cta)}>
-            <span>Kevin Davis Studio</span>
-            <span>Cape Town, ZA</span>
-            <span>Serving Worldwide</span>
-            <CapeTownTime className={s.metaTime} />
-            <span>Available for Commissions</span>
-            <a className={s.metaLink} href="mailto:kevidavis911@gmail.com">
-              Email
-            </a>
-          </header> */}
         </section>
         <Footer page={"about"} />
       </main>

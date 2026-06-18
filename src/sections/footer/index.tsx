@@ -29,7 +29,7 @@ export default function Footer({ page }: FooterProps) {
   const y = useTransform(scrollYProgress, [0.5, 1], ["50vh", "0vh"]);
 
   const items = {
-    logo: "kevin:davis",
+    logo: "kevin:davis®",
     image: { src: "/images/snow.png" },
     email: "kevidavis911@gmail.com",
     studio: { city: "Cape Town, ZA" },

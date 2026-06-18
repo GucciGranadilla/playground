@@ -62,40 +62,47 @@ export default function Slider({ page: _page }: { page?: string }) {
     tweenFactor.current = emblaApi.scrollSnapList().length;
   }, []);
 
-  const tweenScale = useCallback((emblaApi: EmblaCarouselType, event?: any) => {
-    if (isMobile) return;
-    const engine = emblaApi.internalEngine();
-    const scrollProgress = emblaApi.scrollProgress();
-    const slidesInView = emblaApi.slidesInView();
-    const isScrollEvent = event?.type === "scroll";
+  const tweenScale = useCallback(
+    (emblaApi: EmblaCarouselType, event?: any) => {
+      if (isMobile) return;
+      const engine = emblaApi.internalEngine();
+      const scrollProgress = emblaApi.scrollProgress();
+      const slidesInView = emblaApi.slidesInView();
+      const isScrollEvent = event?.type === "scroll";
 
-    emblaApi.scrollSnapList().forEach((scrollSnap, slideIndex) => {
-      if (isScrollEvent && !slidesInView.includes(slideIndex)) return;
+      emblaApi.scrollSnapList().forEach((scrollSnap, slideIndex) => {
+        if (isScrollEvent && !slidesInView.includes(slideIndex)) return;
 
-      let diffToTarget = scrollSnap - scrollProgress;
+        let diffToTarget = scrollSnap - scrollProgress;
 
-      if (engine.options.loop) {
-        engine.slideLooper.loopPoints.forEach((loopItem) => {
-          const target = loopItem.target();
-          if (slideIndex === loopItem.index && target !== 0) {
-            const sign = Math.sign(target);
-            if (sign === -1) diffToTarget = scrollSnap - (1 + scrollProgress);
-            if (sign === 1) diffToTarget = scrollSnap + (1 - scrollProgress);
-          }
-        });
-      }
+        if (engine.options.loop) {
+          engine.slideLooper.loopPoints.forEach((loopItem) => {
+            const target = loopItem.target();
+            if (slideIndex === loopItem.index && target !== 0) {
+              const sign = Math.sign(target);
+              if (sign === -1) diffToTarget = scrollSnap - (1 + scrollProgress);
+              if (sign === 1) diffToTarget = scrollSnap + (1 - scrollProgress);
+            }
+          });
+        }
 
-      const tw = clamp(1 - Math.abs(diffToTarget * tweenFactor.current), 0, 1);
-      const sx = INACTIVE_SCALE_X + tw * (1 - INACTIVE_SCALE_X);
-      const sy = INACTIVE_SCALE_Y + tw * (1 - INACTIVE_SCALE_Y);
+        const tw = clamp(
+          1 - Math.abs(diffToTarget * tweenFactor.current),
+          0,
+          1,
+        );
+        const sx = INACTIVE_SCALE_X + tw * (1 - INACTIVE_SCALE_X);
+        const sy = INACTIVE_SCALE_Y + tw * (1 - INACTIVE_SCALE_Y);
 
-      const inner = tweenNodes.current[slideIndex];
-      if (inner) inner.style.transform = `scaleX(${sx}) scaleY(${sy})`;
+        const inner = tweenNodes.current[slideIndex];
+        if (inner) inner.style.transform = `scaleX(${sx}) scaleY(${sy})`;
 
-      const img = imgNodes.current[slideIndex];
-      if (img) img.style.transform = `scaleX(${sy / sx})`;
-    });
-  }, [isMobile]);
+        const img = imgNodes.current[slideIndex];
+        if (img) img.style.transform = `scaleX(${sy / sx})`;
+      });
+    },
+    [isMobile],
+  );
 
   useEffect(() => {
     if (!emblaApi) return;
@@ -189,7 +196,11 @@ export default function Slider({ page: _page }: { page?: string }) {
 
   return (
     <section className={s.root} ref={sectionRef}>
-      <div className={s.embla} ref={emblaRef}>
+      <div
+        className={c(s.embla, a.fadeUp50Scroll)}
+        style={{ "--delay": "0.575s" } as React.CSSProperties}
+        ref={emblaRef}
+      >
         <div className={s.container}>
           {SLIDES.map((slide, i) => (
             <Link key={i} href={slide.href} className={s.slide}>

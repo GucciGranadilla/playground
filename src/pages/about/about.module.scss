@@ -1,24 +1,80 @@
 @use "styles/colors" as *;
 
-// ── Statement + sidebar ───────────────────────────────────────────────────
+// ── Big-type editorial intro ──────────────────────────────────────────────
+//
+// Composition (8-col grid):
+//   row 1  meta bar          1 / -1   technical header, hairline under
+//   row 2  oversized wordmark 1 / -1  the display moment — dominates the field
+//   row 3  editorial lead    1 / 6    studio statement, accent emphasis
+//   row 4  hairline rule     1 / -1   exposes the structure
+//   row 5  detail band       content (1/4) · sidebar (4/6) · images (6/-1)
+//
+// The detail band keeps content + sidebar in one grid row so the scroll-pinned
+// `.content` (height: 100%) has a tall cell to translate within.
 
 .intro {
   display: grid;
   grid-template-columns: repeat(8, 1fr);
-  column-gap: 4rem;
-  row-gap: 80rem;
-  // padding: calc(var(--nav-height) + 40rem) 8rem 8rem;
+  column-gap: 8rem;
+  row-gap: 40rem;
   padding: 120rem 8rem 60rem;
 }
-.statementWrap {
+
+// ── Meta header ──
+.metaBar {
   grid-column: 1 / -1;
-  position: relative;
+  display: grid;
+  grid-template-columns: repeat(8, 1fr);
+  justify-content: space-between;
+  // align-items: center;
+  flex-wrap: wrap;
+  gap: 4rem;
+  padding-bottom: 20rem;
+  border-bottom: 1px dashed $lgrey;
+  color: $eblack;
 }
+
+.metaItem {
+  grid-column: span 1;
+  white-space: nowrap;
+}
+
+// ── Oversized wordmark ──
+.wordmark {
+  grid-column: 1 / -1;
+  margin: 0;
+  font-family: "Satoshi", "Questrial", sans-serif;
+  font-weight: 550;
+  font-size: 52rem;
+  line-height: 48rem;
+  letter-spacing: -0.04em;
+  color: $eblack;
+
+  span {
+    display: block;
+  }
+  display: none;
+}
+
+.reg {
+  font-size: 0.22em;
+  vertical-align: super;
+  letter-spacing: 0;
+}
+
+// ── Editorial lead ──
+.lead {
+  grid-column: 1 / -1;
+  margin: 0 0 16rem;
+  color: $eblack;
+  text-wrap: pretty;
+}
+
+// ── Detail band: scroll-pinned profile ──
 .content {
   grid-column: 1 / 3;
   position: relative;
   height: 100%;
-  // padding-bottom: 80rem;
   box-sizing: border-box;
 }
 
@@ -75,6 +131,8 @@
     position: relative;
   }
 }
+
+// ── Detail band: index sidebar ──
 .sidebar {
   grid-column: 4 / 6;
   display: flex;
@@ -87,7 +145,6 @@
   display: flex;
   flex-direction: column;
   gap: 12rem;
-  // display: none;
 }
 
 .sidebarLabel {
@@ -101,7 +158,11 @@
   margin: 0;
   display: flex;
   flex-direction: column;
-  gap: 0;
+  gap: 4rem; // separate entries so wrapped (multi-line) ones stay grouped
+
+  li {
+    // line-height: 16rem; // a touch looser than .p for legible wrapping
+  }
 }
 
 .platformLink {
@@ -113,6 +174,7 @@
   }
 }
 
+// ── Detail band: image accents ──
 .images {
   grid-column: 6 / -1;
   display: grid;
@@ -132,4 +194,21 @@
 
 .imageNarrow {
   grid-column: span 1;
+}
+
+@media screen and (min-width: 481px) {
+  .wordmark {
+    font-size: 124rem;
+    line-height: 112rem;
+  }
+}
+
+// Stack the detail band on mobile so columns don't cramp.
+@media screen and (max-width: 480px) {
+  .lead,
+  .content,
+  .sidebar,
+  .images {
+    grid-column: 1 / -1;
+  }
 }

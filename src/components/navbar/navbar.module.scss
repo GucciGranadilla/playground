@@ -22,7 +22,7 @@
 .inner {
   position: relative;
   overflow: clip;
-  padding: 8rem 8rem 4rem;
+  padding: 4rem 8rem 2rem;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -217,8 +217,8 @@
 
   .menuPill {
     position: absolute;
-    top: -2rem;
-    bottom: -2rem;
+    top: 0rem;
+    bottom: 0rem;
     left: -4rem;
     width: 0;
     background: $lgrey;

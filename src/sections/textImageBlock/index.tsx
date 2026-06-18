@@ -57,14 +57,15 @@ export default function TextImageBlock({ section }: TextImageBlockProps) {
     text: section?.text || FALLBACK.text,
     image: {
       src: section?.image?.image?.asset?.url || FALLBACK.image.src,
-      name:
-        section?.image?.alt ||
-        section?.imageName ||
-        FALLBACK.image.name,
+      name: section?.image?.alt || section?.imageName || FALLBACK.image.name,
       year: section?.imageYear ?? FALLBACK.image.year,
     },
     link: resolvedLink?.href
-      ? { href: resolvedLink.href, label: resolvedLink.label || FALLBACK.link.label, external: resolvedLink.external }
+      ? {
+          href: resolvedLink.href,
+          label: resolvedLink.label || FALLBACK.link.label,
+          external: resolvedLink.external,
+        }
       : FALLBACK.link,
   };
 
@@ -88,7 +89,7 @@ export default function TextImageBlock({ section }: TextImageBlockProps) {
   return (
     <section className={s.root} ref={containerRef}>
       <div
-        className={c(s.imageWrap)}
+        className={c(s.imageWrap, a.fadeUpScroll50)}
         style={{ "--delay": "0.575s" } as React.CSSProperties}
       >
         <ParallaxImage
@@ -124,7 +125,7 @@ export default function TextImageBlock({ section }: TextImageBlockProps) {
         >
           <p className={c(s.textItem, t.p)}>{item.text}</p>
         </div>
-        {("external" in item.link && item.link.external) ? (
+        {"external" in item.link && item.link.external ? (
           <a
             href={item.link.href}
             target="_blank"

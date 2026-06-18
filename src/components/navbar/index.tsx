@@ -425,7 +425,7 @@ export default function Navbar({ page }: NavbarProps) {
             className={a.moveUp}
             style={{ "--delay": "0.3s" } as React.CSSProperties}
           >
-            kevin:davis
+            kevin:davis®
           </div>
         </Link>
         <div className={s.menuArea}>
